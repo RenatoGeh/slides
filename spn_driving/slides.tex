@@ -409,7 +409,7 @@
   \frametitle{Maximum a posteriori probability}
 
   Replace sums with max nodes. Backward pass followed by forward pass computes \textbf{approximate}
-  most probable explanation, i.e. find $M(E)=\argmax_{x\in X} P(X, E)$.
+  most probable explanation, i.e. find $M(E)=\argmax_{x\in X} P(X=x, E)$.
 
   \begin{figure}
     \centering\includegraphics[height=0.6\textheight]{imgs/sample_mpn_prob.png}
@@ -734,6 +734,47 @@
       \caption*{3}
     \end{subfigure}
   \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The problems with binarization}
+
+  Hard threshold binarization produces lots of noise!
+
+  \begin{figure}
+    \begin{subfigure}{0.3\linewidth}
+      \centering\includegraphics{imgs/binary_left_h.png}
+      \captionsetup{justification=centering}
+    \end{subfigure}
+    \begin{subfigure}{0.3\linewidth}
+      \centering\includegraphics{imgs/binary_up_h.png}
+      \captionsetup{justification=centering}
+    \end{subfigure}
+    \begin{subfigure}{0.3\linewidth}
+      \centering\includegraphics{imgs/binary_right_h.png}
+      \captionsetup{justification=centering}
+    \end{subfigure}
+  \end{figure}
+
+  \begin{figure}
+    \begin{subfigure}{0.3\linewidth}
+      \centering\includegraphics{imgs/binary_left.png}
+      \captionsetup{justification=centering}
+      \caption*{LEFT}
+    \end{subfigure}
+    \begin{subfigure}{0.3\linewidth}
+      \centering\includegraphics{imgs/binary_up.png}
+      \captionsetup{justification=centering}
+      \caption*{UP}
+    \end{subfigure}
+    \begin{subfigure}{0.3\linewidth}
+      \centering\includegraphics{imgs/binary_right.png}
+      \captionsetup{justification=centering}
+      \caption*{RIGHT}
+    \end{subfigure}
+  \end{figure}
+
+  Otsu's works well, but takes too long!
 \end{frame}
 
 \begin{frame}
