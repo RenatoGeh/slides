@@ -1,6 +1,6 @@
 %&tex
 
-\documentclass{beamer}
+\documentclass[usenames,dvipsnames]{beamer}
 
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
@@ -832,6 +832,7 @@
 
 \begin{frame}
   \frametitle{LearnSPN I}
+  {\large\textbf{LearnSPN} (\cite{gens-domingos})}
 
   The Gens-Domingos LearnSPN schema exploits two SPN properties:
   {\color{blue}\textbf{completeness}} and {\color{red}\textbf{decomposability}}.
@@ -917,20 +918,192 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Poon dense architecture}
+  \frametitle{Poon dense architecture I}
+
+  {\large\textbf{Poon-Domingos architecture} (\cite{poon-domingos})}
+
+  Decompose data into local spatial \emph{neighborhoods}. Call neighborhoods \textbf{Regions},
+  and represent them as sets of sums. \textbf{Decomposition} is done with products.
 
   \textbf{Idea:}
   \begin{enumerate}
-    \item Generate a dense architecture from data.
+    \item Define regions as set of sums.
+    \item Define decompositions of regions as products.
+    \item Create gaussian mixtures for leaves.
+    \item Generate dense architecture through decomposition of regions.
     \item Learn weights with EM or Gradient Descent (GD).
     \item Prune zero weights and redundant sub-SPNs.
   \end{enumerate}
-
-  \begin{definition}[Region]~\\
-    A region $R$ is a
-  \end{definition}
 \end{frame}
 
+\begin{frame}
+  \frametitle{Poon dense architecture II}
+
+  \begin{example}~\\
+    In the image domain, regions could be a rectangular set of pixels. Take our previous example.
+
+    \begin{figure}
+      \centering
+      \begin{tikzpicture}
+        \draw[fill=black!40!white] (1,0) rectangle (2,2);
+        \draw[draw=black] (0,0) grid (3,2);
+        \foreach \x in {0,...,2}
+          \foreach \y in {0,...,1}
+            {\pgfmathtruncatemacro{\label}{\x - 3 * \y + 4}
+            \node at (\x+0.5,\y+0.5) {\color{red}$X_{\label}$};}
+      \end{tikzpicture}
+    \end{figure}
+
+    Any rectangular subset of the image is a region. The smallest (e.g. one pixel) regions are
+    called \emph{fine} regions. All others are \emph{coarse} regions.\qed
+  \end{example}
+
+  \textbf{Special case:} the whole data is a region, represented by a single sum node.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Poon dense architecture III}
+
+  For each region, find all possible rectangular 2-decompositions (horizontal and vertical) and
+  connect them with $m$ products.
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \draw[fill=black!40!white] (1,0) rectangle (2,2);
+      \draw[draw=black] (0,0) grid (3,2);
+      \node[circle,draw,inner sep=1pt] (p1) at (-2.5, -1) {$\times$};
+      \node at (-1.0, -1) {$\ldots$};
+      \node[circle,draw,inner sep=1pt] (p2) at (0.5, -1) {$\times$};
+      \node[circle,draw,inner sep=1pt] (p3) at (2.5, -1) {$\times$};
+      \node at (4.0, -1) {$\ldots$};
+      \node[circle,draw,inner sep=1pt] (p4) at (5.5, -1) {$\times$};
+      \node (r1) at (1.5, 0)   {};
+      \node (r2) at (-2.5, -2) {};
+      \node (r3) at (0.0, -2)  {};
+      \node (r4) at (3.0, -2)  {};
+      \node (r5) at (5.5, -2)  {};
+      \draw[fill=black!40!white] (-1, -4) rectangle (0, -2);
+      \draw[draw=black] (-3,-4) grid (-2, -2);
+      \draw[draw=black] (-1, -4) grid (1, -2);
+      \node at (1.5, -3) {$\ldots$};
+      \draw[fill=black!40!white] (3, -4) rectangle (4, -2);
+      \draw[draw=black] (2, -4) grid (4, -2);
+      \draw[draw=black] (5, -4) grid (6, -2);
+      \begin{scope}[every path/.style={->}]
+        \draw (r1) -- (p1);
+        \draw (r1) -- (p2);
+        \draw (r1) -- (p3);
+        \draw (r1) -- (p4);
+        \draw (p1) -- (r2);
+        \draw (p1) -- (r3);
+        \draw (p2) -- (r2);
+        \draw (p2) -- (r3);
+        \draw (p3) -- (r4);
+        \draw (p3) -- (r5);
+        \draw (p4) -- (r4);
+        \draw (p4) -- (r5);
+      \end{scope}
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Poon dense architecture IV}
+
+  \begin{description}
+    \item[Pros:]~\\
+      \begin{itemize}
+        \item Very dense architecture;
+        \item Depth of $2(d-1)$ for $d\times d$ images, though not as deep as LearnSPN;
+        \item Fast to generate dense structure.
+      \end{itemize}
+    \item[Cons:]~\\
+      \begin{itemize}
+        \item Restricted to only local spatial neighborhoods;
+        \item Very short and very long paths from root to a same variable;
+        \item Biased for Viterbi-style inference (e.g. Max-Product for MAP), prefering shorter
+          paths;
+      \end{itemize}
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Region graphs}
+
+  Both \textcolor{YellowOrange}{Dennis-Ventura (DV)} and RAT-SPNs use \textbf{Region Graphs} to
+  construct an SPN.
+
+  Derived from \textcolor{OliveGreen}{Poon-Domingos' (PD)} concept of Region and Decomposition.
+  Introduced by DV.
+
+  \begin{itemize}
+    \item \textbf{Regions:}\\
+      \textcolor{OliveGreen}{rectangular spatial neighborhoods} vs \textcolor{YellowOrange}{any
+      neighborhood of variables};
+    \item \textbf{Subregions:}\\
+      \textcolor{OliveGreen}{fixed rectangular decomposition} vs \textcolor{YellowOrange}{any
+      partitioning of the scope};
+    \item \textbf{Structure:}\\
+      \textcolor{OliveGreen}{depth is domain dependent} vs \textcolor{YellowOrange}{depth depends
+      only on data/instances}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Region graph definition}
+
+  \begin{definition}[Region graph]~\\
+    A region graph $G$ is a rooted DAG with two possible node types: region and partition nodes.
+    The root of $G$ is a region node. Children of region nodes are partition nodes and vice-versa.
+    Scope of $G$ works similarly to complete decomposable SPNs, with region nodes resembling sums
+    and partitions products.
+  \end{definition}
+
+  \textbf{Main ideas:}
+  \begin{itemize}
+    \item Regions act like set of sums;
+    \item Partitions act like set of products;
+    \item Partition nodes partition the parent's scope;
+    \item Regions are the result of this decomposition;
+    \item Region graph is always a tree because of partitioning.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Constructing a region graph}
+
+  \textbf{General idea for constructing a region graph:}
+  \begin{enumerate}
+    \item Create a root region from whole data.
+    \item Partition data $k$ times.
+    \item Construct partition node for each $k$ split.
+    \item For each of these $k$, create two subregions representing split scope as children of
+      corresponding partition node.
+    \item Recursively repeat until early stop or reach scope of size 1.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Converting a region graph to an SPN}
+
+  \begin{align*}
+    \text{Region node }R\quad &\longrightarrow\quad
+    \begin{cases}
+      m\text{ sum nodes,} & \quad \text{if coarse region;}\\
+      d\text{ distributions,} & \quad \text{if fine region};
+    \end{cases}~\\
+    \text{Partition node }P\quad &\longrightarrow\quad m^2\text{ product nodes}
+  \end{align*}
+
+  Connect every parent region sum node to every child partition product node. ($R\to P$)
+
+  Connect each partition product node with a distinct pair of children region nodes. ($P\to R$)
+\end{frame}
+
+\begin{frame}
+  \frametitle{Semantics of a region graph}
+\end{frame}
 
 \begin{frame}[standout]
   \textbf{Thank you.\\~\\Questions?}
