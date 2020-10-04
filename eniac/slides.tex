@@ -87,6 +87,56 @@ Sum-Product Networks}
 \maketitle
 
 \begin{frame}
+  \frametitle{The task}
+
+  Given a track, bot must autonomously complete the whole course without going off road. The only
+  available input is a single frontal camera.
+
+  \begin{figure}[h]
+    \centering\includegraphics[width=0.475\textwidth]{imgs/track_1_resize.png}
+    \includegraphics[width=0.475\textwidth]{imgs/demo_merged_pairs_small.png}
+  \end{figure}
+
+  Decision making must be done in real-time under a resource constrained, low-budget robot
+  environment.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Robot}
+
+  \begin{multicols}{2}
+    \textbf{Raspberry Pi 3 Model B}
+    \begin{description}
+      \item[CPU:] Quad Core 1.2GHz Broadcom BCM2837 64bit ARMv7
+      \item[Memory:] 1GB RAM
+      \item[Storage:] 16GB SSD
+    \end{description}
+    \textbf{Lego Mindstorms NXT}
+    \begin{description}
+      \item[CPU:] Atmel AT91SAM7S256 48MHz 32bit ARMv4
+      \item[Memory:] 64KB RAM
+      \item[Storage:] 256KB Flash
+    \end{description}
+  \end{multicols}
+
+  \begin{figure}
+    \centering
+    \begin{minipage}{0.3\textwidth}
+      \includegraphics[width=\linewidth]{imgs/berry.png}
+    \end{minipage}
+    $+$
+    \begin{minipage}{0.3\textwidth}
+      \includegraphics[width=\linewidth]{imgs/brick.png}
+    \end{minipage}
+    $=$
+    \begin{minipage}{0.3\textwidth}
+      \includegraphics[width=\linewidth]{imgs/robot.png}
+    \end{minipage}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
   \frametitle{Sum-product networks}
 
   Sum-product networks (SPNs) are deep tractable density estimators with a neural network-like
@@ -189,72 +239,6 @@ Sum-Product Networks}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Computing marginals}
-  We compute marginals by summing out to $1$ missing variables' leaves. Let $\mathbf{X}=\{X_1=1\}$.
-  We want to compute $P(\mathbf{X})$:
-  \begin{center}
-    \begin{tikzpicture}
-      \begin{scope}[every node/.style={circle,draw,inner sep=2pt}]
-        \node[label={[label distance=-5pt]above:\scriptsize$\textcolor{blue}{0.50}$}] (root) at (0, 0) {$+$};
-        \node[label={[label distance=-3pt]above left:\scriptsize$\textcolor{blue}{0.52}$}] (p1) at (-1.5, -1.25) {$\times$};
-        \node[label={[label distance=-3pt]above left:\scriptsize$\textcolor{blue}{0.48}$}] (p2) at (0, -1.25) {$\times$};
-        \node[label={[label distance=-3pt]above right:\scriptsize$\textcolor{blue}{0.48}$}] (p3) at (1.5, -1.25) {$\times$};
-        \node[label={[label distance=-5pt]above:\scriptsize$\textcolor{blue}{0.52}$}] (s1) at (-2.5, -2.5) {$+$};
-        \node[label={[label distance=-5pt]above:\scriptsize$\textcolor{blue}{0.48}$}] (s2) at (-0.75, -2.5) {$+$};
-        \node[label={[label distance=-3pt]above:\scriptsize$\textcolor{blue}{1.0}$}] (s3) at (0.75, -2.5) {$+$};
-        \node[label={[label distance=-3pt]above:\scriptsize$\textcolor{blue}{1.0}$}] (s4) at (2.5, -2.5) {$+$};
-        \node[draw,fill=none,rectangle,label={[label distance=-10pt]below:\scriptsize$(0.2,
-          \textcolor{blue}{0.8})$}] (x11) at (-2.5, -3.75) {${X}_1$};
-        \node[draw,fill=none,rectangle,label={[label distance=-10pt]below:\scriptsize$(0.6,
-          \textcolor{blue}{0.4})$}] (x12) at (-0.75, -3.75) {${X}_1$};
-        \node[draw,fill=none,rectangle,label={[label
-          distance=0pt]below:\scriptsize$\textcolor{blue}{1.0}$}] (x21) at (0.75, -3.75) {${X}_2$};
-        \node[draw,fill=none,rectangle,label={[label
-          distance=0pt]below:\scriptsize$\textcolor{blue}{1.0}$}] (x22) at (2.5, -3.75) {${X}_2$};
-      \end{scope}
-      \begin{scope}[every path/.style={->},>=latex]
-        \draw (p1) -- node[left]{\tiny$0.5$} (root);
-        \draw (p2) -- node{\tiny$0.2$} (root);
-        \draw (p3) -- node[right]{\tiny$0.3$} (root);
-        \draw (s1) -- (p1);
-        \draw (s3) -- (p1);
-        \draw (s2) -- (p2);
-        \draw (s3) -- (p2);
-        \draw (s2) -- (p3);
-        \draw (s4) -- (p3);
-        \draw (x11) -- node[left]{\tiny$0.3$} (s1);
-        \draw (x12) -- node[left]{\tiny$0.7$} (s1);
-        \draw (x11) -- node[right]{\tiny$0.2$} (s2);
-        \draw (x12) -- node[right]{\tiny$0.8$} (s2);
-        \draw (x21) -- node[left]{\tiny$0.6$} (s3);
-        \draw (x22) -- node[left]{\tiny$0.4$} (s3);
-        \draw (x21) -- node[right]{\tiny$0.9$} (s4);
-        \draw (x22) -- node[right]{\tiny$0.1$} (s4);
-      \end{scope}
-    \end{tikzpicture}
-  \end{center}
-  \begin{equation*}
-    P(\mathbf{X}=\{X_1=1\})=0.5
-  \end{equation*}
-\end{frame}
-
-\begin{frame}
-  \frametitle{The task}
-
-  Given a track, bot must autonomously complete the whole course without going off road. The only
-  available input is a single frontal camera.
-
-  \begin{figure}[h]
-    \centering\includegraphics[width=0.475\textwidth]{imgs/track_1_resize.png}
-    \includegraphics[width=0.475\textwidth]{imgs/demo_merged_pairs_small.png}
-  \end{figure}
-
-  Decision making must be done in real-time under a resource constrained, low-budget robot
-  environment.
-
-\end{frame}
-
-\begin{frame}
   \frametitle{Why SPNs?}
 
   \begin{itemize}
@@ -265,40 +249,6 @@ Sum-Product Networks}
     \item Good performance with much smaller models;
     \item Not been tried ``in the wild'' yet.
   \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Robot}
-
-  \begin{multicols}{2}
-    \textbf{Raspberry Pi 3 Model B}
-    \begin{description}
-      \item[CPU:] Quad Core 1.2GHz Broadcom BCM2837 64bit ARMv7
-      \item[Memory:] 1GB RAM
-      \item[Storage:] 16GB SSD
-    \end{description}
-    \textbf{Lego Mindstorms NXT}
-    \begin{description}
-      \item[CPU:] Atmel AT91SAM7S256 48MHz 32bit ARMv4
-      \item[Memory:] 64KB RAM
-      \item[Storage:] 256KB Flash
-    \end{description}
-  \end{multicols}
-
-  \begin{figure}
-    \centering
-    \begin{minipage}{0.3\textwidth}
-      \includegraphics[width=\linewidth]{imgs/berry.png}
-    \end{minipage}
-    $+$
-    \begin{minipage}{0.3\textwidth}
-      \includegraphics[width=\linewidth]{imgs/brick.png}
-    \end{minipage}
-    $=$
-    \begin{minipage}{0.3\textwidth}
-      \includegraphics[width=\linewidth]{imgs/robot.png}
-    \end{minipage}
-  \end{figure}
 \end{frame}
 
 \begin{frame}
