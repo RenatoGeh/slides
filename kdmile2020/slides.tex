@@ -130,9 +130,8 @@
 
 \definecolor{LightGray}{gray}{0.85}
 
-\input{led}
 \input{tables}
-\input{dist}
+\input{led}
 
 \title{Learning Probabilistic Sentential Decision Diagrams by Sampling}
 \subtitle{~\\KDMiLe 2020}
@@ -146,6 +145,47 @@ sull'Intelligenza Artificiale, Switzerland\\\texttt{alessandro@idsia.ch}}
 \begin{document}
 
 \maketitle
+
+%\section{Motivation}
+
+%\begin{frame}
+  %\frametitle{Why Probabilistic Sentential Decision Diagrams?}
+
+  %\begin{align*}
+    %\text{\textbf{Observable segments:}}\quad &\set{Y}=\{Y_1,Y_2,\ldots,Y_7\}\\
+    %\text{\textbf{Latent segments:}}\quad &\set{X}=\{X_1,X_2,\ldots,X_7\}
+  %\end{align*}
+
+  %\begin{center}
+    %\sevensegnum[size=1.5em,line width=0.2em]{4}\\\small
+    %$\phi_4 = \neg X_1 \wedge  X_2 \wedge  X_3 \wedge \neg X_4 \wedge \neg X_5 \wedge  X_6 \wedge  X_7$
+  %\end{center}
+  %\begin{center}
+    %\sevensegnum[size=1.5em,line width=0.2em]{7}\\\small
+    %$\phi_7 =  X_1 \wedge  X_2 \wedge  X_3 \wedge \neg X_4 \wedge \neg X_5 \wedge \neg X_6 \wedge \neg X_7$
+  %\end{center}
+
+  %\begin{center}
+    %\parbox{0.8\textwidth}{
+      %Given $\set{Y}=\set{y}$, find
+      %\begin{equation*}
+	%\hat{\set{x}}=\argmax_{\set{x}} p(\set{x}|\set{y}),
+      %\end{equation*}
+      %such that $\hat{\set{x}}$ is a valid digit following a formula $\phi_d$.
+    %}
+  %\end{center}
+
+  %%0 & $\phi_0 =  X_1 \wedge  X_2 \wedge  X_3 \wedge  X_4 \wedge  X_5 \wedge  X_6 \wedge \neg X_7$\\
+  %%1 & $\phi_0 = \neg X_1 \wedge  X_2 \wedge  X_3 \wedge \neg X_4 \wedge \neg X_5 \wedge \neg X_6 \wedge \neg X_7$\\
+  %%2 & $\phi_0 =  X_1 \wedge  X_2 \wedge \neg X_3 \wedge  X_4 \wedge  X_5 \wedge \neg X_6 \wedge  X_7$\\
+  %%3 & $\phi_0 =  X_1 \wedge  X_2 \wedge  X_3 \wedge  X_4 \wedge \neg X_5 \wedge \neg X_6 \wedge  X_7$\\
+  %%4 & $\phi_0 = \neg X_1 \wedge  X_2 \wedge  X_3 \wedge \neg X_4 \wedge \neg X_5 \wedge  X_6 \wedge  X_7$\\
+  %%5 & $\phi_0 =  X_1 \wedge \neg X_2 \wedge  X_3 \wedge  X_4 \wedge \neg X_5 \wedge  X_6 \wedge  X_7$\\
+  %%6 & $\phi_0 =  X_1 \wedge \neg X_2 \wedge  X_3 \wedge  X_4 \wedge  X_5 \wedge  X_6 \wedge  X_7$\\
+  %%7 & $\phi_0 =  X_1 \wedge  X_2 \wedge  X_3 \wedge \neg X_4 \wedge \neg X_5 \wedge \neg X_6 \wedge \neg X_7$\\
+  %%8 & $\phi_0 =  X_1 \wedge  X_2 \wedge  X_3 \wedge  X_4 \wedge  X_5 \wedge  X_6 \wedge  X_7$\\
+  %%9 & $\phi_0 =  X_1 \wedge  X_2 \wedge  X_3 \wedge  X_4 \wedge \neg X_5 \wedge  X_6 \wedge  X_7$
+%\end{frame}
 
 \section{Background}
 
@@ -261,7 +301,7 @@ sull'Intelligenza Artificiale, Switzerland\\\texttt{alessandro@idsia.ch}}
   }
   \only<1>{
     \vskip 0.25cm
-    \hfill\cite{dang20}
+    \hfill\cite{kisa14}
   }
   \only<2>{
     \vskip 0.25cm
