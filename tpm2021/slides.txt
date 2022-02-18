@@ -1,0 +1,66 @@
+In this work, we revisit random projections, a known procedure to recursively partition data in
+order to learn decision trees. We explore its use in probabilistic circuits, and show very
+preliminary empirical results on their performance.
+
+In 2020, Correia et al showed that there exists a link between decision trees (DTs) and probabilistic
+circuits (PCs). There have also been advances in linking DTs and PCs, but mostly in supervised tasks. We
+therefore ask the research question: can we extend this further to the unsupervised context? In
+DTs, we often explain data by partitioning the datapoints by some criterion, effectively defining
+hyperplanes to separate data. Unfortunately, neither axis-aligned projections nor median splits
+explain data well, moreso on high dimensional data. For instance, here on the right, in the second
+column, we're splitting the blue data points from the first column into two clusters. If we were to
+take the median, we'd end up with a poor quality cluster. However, Dasgupta and Freund did show
+that random projections (or RPs) do scale well to the so-called intrinsic dimension of data. The
+idea is simple: sample a hyperplane with random direction and apply some perturbation so that it
+divides data somewhat equally. Here we evaluate two such perturbations: by diameter and square
+interpoint distance (or SID). On the right we can see that the separation is much clearer for these
+RPs.
+
+To reframe this idea as a PC problem, we take inspiration from LearnSPN: sums define clusters, and
+so do projections. Each random projection is defined as a two-child sum node. We recursively apply
+this data split until we reach a certain maximum height or the data is sufficiently small. When we
+reach this point, we learn a multivariate distribution: here we try a fully factorized circuit or
+a RAT-SPN.
+
+In another variant, we additionally add a mixture node with k projections as children, which adds
+some more variability to projections.
+
+As first experiment, we learn these PCs on the 2-moons dataset, shown here on the top left. We
+learn the parameters through online and batch EM, and verify that batch is just as good as online,
+with the added benefit of being faster. Here on the right we show the densities of the learned PCs.
+Leaves of the PCs are gaussians, of which we either fixed their values during EM, or constrained
+their variance to some small value. We visually see that, even without learning the leaves, the PCs
+were able to encode the data quite well.
+
+Finally, we evaluate our methods in the well known 20 binary density estimation datasets against
+LearnSPN, Strudel, LearnPSDD and extremely randomized ensembles of PCs (or EXPCs), a work that has just been
+published at this year's UAI. We report average log-likelihood and time it took to learn the
+structure of these PCs. For the latter, since we did not have the time to run the EXPC
+implementation, we leave these out. Full results in the paper.
+
+Our work is very preliminary, and there are several interesting questions we might raise. For
+instance, do RP theoretical guarantees extend to PCs? Are there other desirable statistical
+properties that arise from RPs? Can we build more elaborate structural learners that take advantage
+of RPs? What if we use more complex leaf distributions, such as CLTs or other PCs instead of just
+fully factorized distributions or RAT-SPNs?
+
+---
+
+Random Projections (or RPs) are a well-known procedure used in decision tree learning. The
+theoretical guarantees entailed by RPs allow learning high dimensional manifolds
+from data. Recent advances in probabilistic circuits (PCs), have shown a link between decision
+trees and PCs. We therefore ask the following question: can we transplant RPs to the PC
+framework and still have the same guarantees? This work is a very preliminary small step
+towards answering that question. Here, we translate RPs as sum nodes, building a PC by recursively
+partitioning data through random projections.
+
+As a first experiment, we empirically evaluate these PCs on the 2-moons dataset. We show that, even
+without learning the leaves, these PCs were able to encode data quite well.
+
+We also evaluate our methods in the well known 20 datasets. We report average log-likelihood and
+structure learning time. Comparatively, our methods are almost never best, but given their
+simplicity, these are promising results to motivate further research on. Our work is very
+preliminary, and there are several interesting questions one might raise. For instance, do RP
+theoretical properties extend to PCs? Are there other desirable statistical properties that arise
+from them? We would love to discuss these questions and more during the poster session.  Hope to
+see you there. Thank you.
