@@ -246,6 +246,10 @@ in
   \resizebox{!}{0.75cm}{\hspace*{0.1cm}\color{boxblue}#1}
 }
 
+\newcommand{\sushi}[1]{\includegraphics[width=32px]{figures/#1}}
+\newcommand{\isushi}[1]{\includegraphics[width=32px,trim=0 75px 0 0]{figures/#1}}
+\newcommand{\rankp}[2]{\text{#1\tsup{#2}}}
+
 \geometry{
   left=0.5cm,
   right=0.5cm,
@@ -312,9 +316,6 @@ in
 \vspace*{-1cm}
 
 \begin{center}
-  \newcommand{\sushi}[1]{\includegraphics[width=32px]{figures/#1}}
-  \newcommand{\isushi}[1]{\includegraphics[width=32px,trim=0 75px 0 0]{figures/#1}}
-  \newcommand{\rankp}[2]{\text{#1\tsup{#2}}}
   \begin{minipage}{\textwidth}
     \centering
     \resizebox{!}{0.95\textheight}{
@@ -373,9 +374,6 @@ in
 \vspace*{-1cm}
 
 \begin{center}
-  \newcommand{\sushi}[1]{\includegraphics[width=32px]{figures/#1}}
-  \newcommand{\isushi}[1]{\includegraphics[width=32px,trim=0 75px 0 0]{figures/#1}}
-  \newcommand{\rankp}[2]{\text{#1\tsup{#2}}}
   \begin{minipage}{\textwidth}
     \centering
     \resizebox{!}{0.95\textheight}{
@@ -1559,15 +1557,276 @@ in
     \noalign{\global\arrayrulewidth=2pt}
     \arrayrulecolor{boxblue}
     \hline
+    \noalign{\global\arrayrulewidth=0.4pt}
   \end{tabular}
   }
 \end{vhcenterb}
 
-% Slide: SamplePSDD
+% Slide: SamplePSDD - Why?
 
 \newpage
 
+\newtitle{\textproc{SamplePSDD} -- Why?}
+\vspace*{-0.5cm}
 
+\begin{center}
+  \begin{center}
+    \resizebox{!}{0.3\textheight}{
+    \begin{tikzpicture}
+      \node (alice) at (-1, -1.0) {\Large\textbf{Alice:}};
+      \node (a1) at ($(alice) + (1.5,0)$) {\sushi{kani}};
+      \node (a2) at ($(a1) + (1.5,0)$) {\sushi{ebi}};
+      \node (a3) at ($(a2) + (1.5,0)$) {\sushi{salmon}};
+      \node (a4) at ($(a3) + (1.3,0)$) {\sushi{cucumber}};
+      \node (a5) at ($(a4) + (1.3,0.0)$) {\sushi{oniguiri}};
+
+      \node at ($(a1) + (0,1)$) {\sushi{oniguiri}};
+      \node at ($(a2) + (0,1)$) {\sushi{ebi}};
+      \node at ($(a3) + (0,1)$) {\sushi{kani}};
+      \node at ($(a4) + (0,1)$) {\sushi{salmon}};
+      \node at ($(a5) + (0,1)$) {\sushi{cucumber}};
+
+      \node (bob) at ($(alice) + (0,-1)$) {\Large\textbf{Bob:}};
+      \node (b1) at ($(a1) + (0,-1)$) {\sushi{salmon}};
+      \node (b2) at ($(a2) + (0,-1)$) {\sushi{cucumber}};
+      \node (b3) at ($(a3) + (0,-1)$) {\sushi{ebi}};
+      \node (b4) at ($(a4) + (0,-1)$) {\sushi{oniguiri}};
+      \node (b5) at ($(a5) + (0,-1)$) {\sushi{kani}};
+
+      \node (carol) at ($(bob) + (0,-1)$) {\Large\textbf{Carol:}};
+      \node (c1) at ($(b1) + (0,-1)$) {\sushi{ebi}};
+      \node (c2) at ($(b2) + (0,-1)$) {\sushi{salmon}};
+      \node (c3) at ($(b3) + (0,-1)$) {\sushi{kani}};
+      \node (c4) at ($(b4) + (0,-1)$) {\sushi{cucumber}};
+      \node (c5) at ($(b5) + (0,-1)$) {\sushi{oniguiri}};
+    \end{tikzpicture}
+    }
+  \end{center}
+  \vskip -1.0cm
+  \begin{minipage}[t]{0.55\textwidth}
+    \resizebox{\textwidth}{!}{
+      \large
+      \vbox{
+      If we assume
+      \vskip 0.1cm
+      \begin{itemize}
+        \item[] \colorbox{boxblue!70}{$n$} sushi types,
+        \item[] \colorbox{boxblue!70}{$k$} sized rankings with $k\leq n$,
+        \item[] \colorbox{boxblue!70}{$X_{ij}$} binary variables; $i$ is sushi type, $j$ is
+          position in ranking;
+      \end{itemize}
+      \vskip 0.1cm
+      then the total number of possible assignments of the $n\cdot k$ variables is
+      \colorbox{boxgold!50}{$2^{nk}$}...
+
+      \vskip 0.1cm
+      \begin{center}
+        \colorbox{boxorange!70}{...but many of these are zero probability assignments!}
+      \end{center}
+
+      \vskip 0.1cm
+      If we can embed total ranking constraints...
+
+      \vskip 0.1cm
+      \begin{center}
+        \colorbox{boxteal!70}{...we go down to \underline{k!} total assignments!}
+      \end{center}
+
+      \vskip 0.1cm
+      \textbf{Takeaway:} models which exploit domain knowledge are much more efficient!
+      }
+    }
+  \end{minipage}
+  \begin{minipage}[t]{0.35\textwidth}
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}
+      \node (t) at (0, 0) {
+        \begin{tabular}{cccccc|c}
+          \hline
+          $X_{11}$ & $X_{12}$ & $X_{13}$ & $X_{21}$ & $\cdots$ & $X_{33}$ & $p(\set{x})>0$\\
+          \hline
+          0 & 0 & 0 & 0 & 0 & 0 & 0\\
+          1 & 0 & 0 & 0 & 0 & 0 & 0\\
+          0 & 1 & 0 & 0 & 0 & 0 & 0\\
+          1 & 1 & 0 & 0 & 0 & 0 & 0\\
+          0 & 0 & 1 & 0 & 0 & 0 & 0\\
+          $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$\\
+          0 & 1 & 1 & 1 & 1 & 1 & 0\\
+          1 & 1 & 1 & 1 & 1 & 1 & 0\\
+          \hline
+        \end{tabular}
+      };
+      \node[anchor=west] at ($(t.north west) + (0.5,0.25)$) {$n=3$, $k=3$};
+      \node[anchor=west] at ($(t.north west) + (0,0.85)$) {\textbf{Example:}};
+      \node[anchor=west] at ($(t.south west) + (0,-0.5)$) {Assignments: $2^{3\cdot 3}=512$};
+      \node[anchor=west] at ($(t.south west) + (0,-1.1)$) {Positive assignments: $3!=6$};
+      \node at ($(t.north) + (0,2.0)$) {};
+    \end{tikzpicture}
+    }
+  \end{minipage}
+\end{center}
+
+\vskip 0.5cm
+\textcolor{boxdgray}{\cite{choi15}}
+
+% Slide: SamplePSDD -- How?
+
+\newpage
+
+\newtitle{\textproc{SamplePSDD} -- How?}
+
+\vskip 1cm
+\begin{center}
+  \resizebox{!}{2em}{
+    \textcolor{Red}{Common assumption}: \textcolor{pviolet}{$p_i$} are \colorbox{boxblue!70}{conjunctions of literals}.
+  }
+  \vskip 1cm
+
+  \resizebox{!}{0.6\textheight}{
+  \begin{tikzpicture}
+    \node at (0, 1) {$\phi(A,B,C,D)=(A\wedge\neg B\wedge\neg D)\vee(B\wedge\neg C \wedge D)$};
+
+    \newNamedOrNode[fill=boxgreen,inputs=nnnn]{r}{0,0}{1};
+    \newNamedAndNode[fill=boxblue,inputs=nn]{a1}{$(r) + (-3.0,-1.5)$}{$e_1$};
+    \newNamedAndNode[fill=boxorange,inputs=nn]{a2}{$(r) + (-1.0,-1.5)$}{$e_2$};
+    \newNamedAndNode[fill=boxred,inputs=nn]{a3}{$(r) + (1.0,-1.5)$}{$e_3$};
+    \newNamedAndNode[fill=boxgoldenrod,inputs=nn]{a4}{$(r) + (3.0,-1.5)$}{$e_4$};
+
+    \node (p1) at ($(a1.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge B$};
+    \node (p2) at ($(a2.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge\neg B$};
+    \node (p3) at ($(a3.input 1) + (-0.6,-0.75)$) {\color{pviolet}$\neg A\wedge B$};
+    \node (p4) at ($(a4.input 1) + (-0.7,-0.75)$) {\color{pviolet}$\neg A\wedge\neg B$};
+    \node (s1) at ($(a1.input 2) + (0,-1.25)$) {\color{psandy}$\neg C\wedge D$};
+    \node (s2) at ($(a2.input 2) + (0,-1.25)$) {\color{psandy}$\neg D$};
+    \node (s3) at ($(a3.input 2) + (0,-1.25)$) {\color{psandy}$\neg C\wedge D$};
+    \node (s4) at ($(a4.input 2) + (0,-1.25)$) {\color{psandy}$\bot$};
+    \node at ($(r) + (3,0.25)$) {\large$\textcolor{psandy}{s_i}=\phi|_{\textcolor{pviolet}{p_i}}$};
+
+    \draw[edge] (r.input 1) -- ++(0,-0.2) -| (a1);
+    \draw[edge] (r.input 2) -- ++(0,-0.4) -| (a2);
+    \draw[edge] (r.input 3) -- ++(0,-0.4) -| (a3);
+    \draw[edge] (r.input 4) -- ++(0,-0.2) -| (a4);
+    \draw[edge] (a1.input 1) -- ++(0,-0.3) -| (p1);
+    \draw[edge] (a2.input 1) -- ++(0,-0.3) -| (p2);
+    \draw[edge] (a3.input 1) -- ++(0,-0.3) -| (p3);
+    \draw[edge] (a4.input 1) -- ++(0,-0.3) -| (p4);
+    \draw[edge] (a1.input 2) -- ++(0,-0.4) -| (s1);
+    \draw[edge] (a2.input 2) -- ++(0,-0.4) -| (s2);
+    \draw[edge] (a3.input 2) -- ++(0,-0.4) -| (s3);
+    \draw[edge] (a4.input 2) -- ++(0,-0.4) -| (s4);
+
+    \newVtreeNode[fill=boxgreen]{root}{6.5,1.0}{1};
+    \newVtreeNode[fill=pviolet!70]{nr}{$(root) + (-1.0,-1.25)$}{2};
+    \newVtreeNode[fill=psandy!70]{n1}{$(root) + (1.0,-1.25)$}{3};
+    \newVtreeNode{n2}{$(nr) + (-0.5,-1.25)$}{$A$};
+    \newVtreeNode{ne}{$(nr) + (0.5,-1.25)$}{$B$};
+    \newVtreeNode{n3}{$(n1) + (-0.5,-1.25)$}{4};
+    \newVtreeNode{n4}{$(n1) + (0.5,-1.25)$}{$C$};
+    \newVtreeNode{n5}{$(n3) + (-0.5,-1.25)$}{$D$};
+    \newVtreeNode{n6}{$(n3) + (0.5,-1.25)$}{$E$};
+    \draw (root) -- (n1);
+    \draw (n1) -- (n3);
+    \draw (root) -- (nr);
+    \draw (nr) -- (n2);
+    \draw (nr) -- (ne);
+    \draw (n1) -- (n3);
+    \draw (n1) -- (n4);
+    \draw (n3) -- (n6);
+    \draw (n3) -- (n5);
+  \end{tikzpicture}
+  }
+
+  \vskip 1cm
+  \resizebox{!}{2em}{
+    \colorbox{pyellow}{\textbf{Problem:}} size of circuit is \textcolor{Red}{exponential} in the
+    size of \textcolor{pviolet}{$p_i$}'s scope.
+  }
+\end{center}
+
+
+% Slide: SamplePSDD -- How? 2
+
+\newpage
+
+\newtitle{\textproc{SamplePSDD} -- How?}
+
+\begin{center}
+  \resizebox{!}{2em}{
+    \colorbox{boxteal!60}{\textbf{{Solution:}}} randomly sample a bounded number ($k$) of \textcolor{pviolet}{$p_i$}
+  }
+  \vskip 0.5cm
+
+  \resizebox{!}{0.5\textheight}{
+    \begin{tikzpicture}
+      \node at (0, 1) {$\phi(A,B,C,D)=(A\wedge\neg B\wedge\neg D)\vee(B\wedge\neg C \wedge D)$};
+
+      \newNamedOrNode[fill=boxgreen,inputs=nnn]{r}{-2.35,0}{1};
+      \newNamedAndNode[fill=boxblue,inputs=nn]{a1}{$(r) + (-2.0,-1.5)$}{$e_1$};
+      \newNamedAndNode[fill=boxorange,inputs=nn]{a2}{$(r) + (0.0,-1.5)$}{$e_2$};
+      \newNamedAndNode[fill=boxpink!80,inputs=nn]{a3}{$(r) + (2.0,-1.5)$}{$e_3$};
+
+      \node (p1) at ($(a1.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge B$};
+      \node (p2) at ($(a2.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge\neg B$};
+      \node (p3) at ($(a3.input 1) + (-0.7,-0.75)$) {\color{pviolet}$\neg A$};
+      \node (s1) at ($(a1.input 2) + (0,-1.25)$) {\colorbox{pyellow}{\color{psandy}$\neg C\wedge D$}};
+      \node (s2) at ($(a2.input 2) + (0,-1.25)$) {\color{psandy}$\neg D$};
+      \node (s3) at ($(a3.input 2) + (0,-1.25)$) {\colorbox{pyellow}{\color{psandy}$B\wedge\neg C\wedge D$}};
+      \node (subl) at ($(r) + (4.5,0.25)$) {\Large$\textcolor{psandy}{s_i}=\phi|_{\textcolor{pviolet}{p_i}}$};
+
+      \node (lab) at ($(subl) + (0,-1.5)$) {$\Sc(s_3)\not\subseteq\set{S}$};
+      \draw[very thick,boxred,->] (s3.east) edge[bend right=50] (lab);
+
+      \draw[edge] (r.input 1) -- ++(0,-0.3) -| (a1);
+      \draw[edge] (r.input 2) -- ++(0,-0.3) -| (a2);
+      \draw[edge] (r.input 3) -- ++(0,-0.3) -| (a3);
+      \draw[edge] (a1.input 1) -- ++(0,-0.3) -| (p1);
+      \draw[edge] (a2.input 1) -- ++(0,-0.3) -| (p2);
+      \draw[edge] (a3.input 1) -- ++(0,-0.3) -| (p3);
+      \draw[edge] (a1.input 2) -- ++(0,-0.4) -| (s1);
+      \draw[edge] (a2.input 2) -- ++(0,-0.4) -| (s2);
+      \draw[edge] (a3.input 2) -- ++(0,-0.4) -| (s3);
+
+      \newVtreeNode[fill=boxgreen]{root}{6.5,1.0}{1};
+      \newVtreeNode[fill=pviolet!70]{n1}{$(root) + (-1.0,-1.25)$}{2};
+      \newVtreeNode[fill=psandy!70]{nr}{$(root) + (1.0,-1.25)$}{3};
+      \newVtreeNode{n2}{$(nr) + (-0.5,-1.25)$}{$D$};
+      \newVtreeNode{ne}{$(nr) + (0.5,-1.25)$}{$E$};
+      \newVtreeNode{n3}{$(n1) + (-0.5,-1.25)$}{4};
+      \newVtreeNode{n4}{$(n1) + (0.5,-1.25)$}{$C$};
+      \newVtreeNode{n5}{$(n3) + (-0.5,-1.25)$}{$A$};
+      \newVtreeNode{n6}{$(n3) + (0.5,-1.25)$}{$B$};
+      \draw (root) -- (n1);
+      \draw (n1) -- (n3);
+      \draw (root) -- (nr);
+      \draw (nr) -- (n2);
+      \draw (nr) -- (ne);
+      \draw (n1) -- (n3);
+      \draw (n1) -- (n4);
+      \draw (n3) -- (n6);
+      \draw (n3) -- (n5);
+      \draw[very thick,dashed,pbrickred] ($(n2) + (-0.5,1.7)$) rectangle ($(ne) + (0.5,-0.4)$);
+      \node at ($(nr) + (0.75,0.75)$) {$\set{S}$};
+      \node at ($(nr) + (0,-2.5)$) {$\set{S}=\{D,E\}$};
+    \end{tikzpicture}
+  }
+  \vskip 0.5cm
+
+  \resizebox{!}{2em}{
+    \colorbox{pyellow}{\textbf{But:}} this \textcolor{Red}{violates structure decomposability}:
+  }
+  \vskip 0.25cm
+
+  \resizebox{!}{2.5em}{
+    \centering
+    \begin{minipage}{0.5\textwidth}
+      \flushleft
+      \textcolor{psandy}{$\neg C\wedge D$} contains $C$, and $C\not\in\mathcal{S}$
+
+      \textcolor{psandy}{$\neg B\wedge\neg C\wedge D$} contains $B$ and $C$, and $B,C\not\in\mathcal{S}$
+    \end{minipage}
+  }
+\end{center}
 
 \nobibliography{refs.bib}
 
