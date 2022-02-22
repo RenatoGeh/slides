@@ -71,11 +71,22 @@
 \definecolor{pbrickred}{HTML}{D1495B}
 \definecolor{pyellow}{HTML}{FFE066}
 
+\definecolor{llw}{rgb}{0.00784313725490196,0.24313725490196078,1.0}
+\definecolor{unif}{rgb}{1.0,0.48627450980392156,0.0}
+\definecolor{em}{rgb}{0.10196078431372549,0.788235294117647,0.2196078431372549}
+\definecolor{stack}{rgb}{0.9098039215686274,0.0,0.043137254901960784}
+\definecolor{bmc}{rgb}{0.5450980392156862,0.16862745098039217,0.8862745098039215}
+\definecolor{strudel}{rgb}{0.6235294117647059,0.2823529411764706,0.0}
+\definecolor{learnpsdd}{rgb}{0.6392156862745098,0.6392156862745098,0.6392156862745098}
+\definecolor{learnspn}{rgb}{0.0,0.8431372549019608,1.0}
+
 \usepackage{pifont}
 
 \newcommand{\cmark}{\color{boxgreen}\ding{51}}%
 \newcommand{\xmark}{\color{boxred}\ding{55}}%
 \newcommand{\omark}{{\color{boxblue!40!black}\large$\bm{\bigcirc}$}}%
+\newcommand{\done}{\rlap{$\square$}{\raisebox{2pt}{\large\hspace{1pt}\cmark}}}
+\newcommand{\wontfix}{\rlap{$\square$}{\large\hspace{1pt}\xmark}}
 
 \newlist{checks}{itemize}{2}
 \setlist[checks]{label=$\square$,align=left,labelindent=*}
@@ -137,6 +148,12 @@
 \newcommand{\mcode}[1]{\lstinline[mathescape]!#1!}
 
 \newcommand{\edge}[1]{\overrightarrow{#1}}
+
+\newcommand*\llwi{\resizebox{10pt}{!}{\tikz{\node[shape=circle,fill=llw,minimum size=5pt] (char) {};}}}
+\newcommand*\unifi{\resizebox{10pt}{!}{\tikz{\node[shape=rectangle,fill=llw,minimum size=8pt] (char) {};}}}
+\newcommand*\emi{\resizebox{10pt}{!}{\tikz{\node[shape=diamond,fill=llw,minimum size=8pt] (char) {};}}}
+\newcommand*\stacki{\resizebox{10pt}{!}{\tikz{\node[regular polygon,regular polygon sides=3,fill=llw,minimum size=8pt] (char) {};}}}
+\newcommand*\bmci{\resizebox{10pt}{!}{\tikz{\node[regular polygon,regular polygon sides=3,rotate=180,fill=llw,minimum size=3pt] (char) {};}}}
 
 \newcommand{\ov}{\overline}
 \newcommand{\tsup}{\textsuperscript}
@@ -1670,11 +1687,151 @@ in
 \vskip 0.5cm
 \textcolor{boxdgray}{\cite{choi15}}
 
-% Slide: SamplePSDD -- How?
+% Slide: SamplePSDD -- Why? 2
 
 \newpage
 
-\newtitle{\textproc{SamplePSDD} -- How?}
+\newtitle{\textproc{SamplePSDD} -- Why?}
+
+\vskip 0.5cm
+
+\resizebox{0.49\textwidth}{!}{
+\begin{minipage}{0.39\textwidth}
+  \colorbox{pyellow}{\underline{\textbf{Existing approaches:}}}
+  \vskip 0.25cm
+  \textsc{LearnPSDD} (\textcolor{boxdgray}{\cite{liang17}}):
+  \begin{checks}
+    \item[\wontfix] Requires initial logic circuit encoding the support...
+    \item[\wontfix] Scales poorly to complex formulae and/or high dimension...
+    \item[\wontfix] Costly whole circuit evaluation at every iteration...
+    \item[\done] Very good performance!
+  \end{checks}
+  \textsc{Strudel} (\textcolor{boxdgray}{\cite{dang20}}):
+  \begin{checks}
+    \item[\done] Constructs an initial structure (from a CLT)!
+    \item[\wontfix] But does not encode constraints...
+    \item[\done] Scales to high dimension!
+    \item[\wontfix] As long as the circuit doesn't get too big...
+  \end{checks}
+  \textsc{SamplePSDD} (\textcolor{boxdgray}{\cite{geh21a}}):
+  \begin{checks}
+    \item[\done] Scales to high dimension and complex formulae!
+    \item[\done] Constructs a structure consistent with constraints!
+    \item[\wontfix] But does so by relaxing the formula...
+    \item[\wontfix] Performance varies on set bounds and vtree structure...
+  \end{checks}
+\end{minipage}}\resizebox{0.425\textwidth}{!}{\begin{minipage}{0.35\textwidth}
+  \begin{center}
+    \begin{tikzpicture}
+      \newNamedOrNode[scale=1,draw=red,very thick,inputs=nn]{r}{0,0}{$\alpha$};
+      \newAndNode[draw=red,very thick,inputs=nn]{p1}{0,-1};
+      \newNamedOrNode[draw=red,very thick,inputs=nn]{s1}{$(p1.input 1) + (0,-1)$}{$\beta$};
+      \newNamedOrNode[inputs=nn]{s2}{$(p1.input 2) + (1.5,-1)$}{$\gamma$};
+      \newAndNode[inputs=nn]{p2}{$(s1.input 1) + (-1.0,-1)$};
+      \newAndNode[inputs=nn]{p3}{$(s1.input 2) + (1.0,-1)$};
+      \newOrNode[inputs=nn]{s3}{$(p2.input 2) + (0.5,-1)$};
+      \newOrNode[inputs=nn]{s4}{$(p3.input 2) + (0.5,-1)$};
+      \node (a) at ($(p2.input 1) + (0.0,-1)$) {$A$};
+      \node (na) at ($(p3.input 1) + (0.0,-1)$) {$\neg A$};
+      \draw[edge,draw=red,very thick] (r.west) -- (p1.east);
+      \draw[edge,draw=red,very thick] (p1.input 1) -- (s1.east);
+      \draw[edge,draw=red,very thick] (p1.input 2) -- ++(0,-0.25) -| (s2.east);
+      \draw[edge] (s1.input 1) -- ++(0,-0.25) -| (p2.east);
+      \draw[edge] (s1.input 2) -- ++(0,-0.25) -| (p3.east);
+      \draw[edge] (p2.input 1) -- (a);
+      \draw[edge] (p2.input 2) -- ++(0,-0.25) -| (s3.east);
+      \draw[edge] (p3.input 1) -- (na);
+      \draw[edge] (p3.input 2) -- ++(0,-0.25) -| (s4.east);
+
+      \node[style={single arrow,draw=red,thick}] (arrow) at (1.75,-0.5)
+        {\small\textrm{\textsc{Split}} on $A$};
+
+      \begin{scope}[every node/.style={minimum size=15pt}]
+        \newNamedOrNode[draw=red,very thick,inputs=nn]{r}{$(arrow.east) + (1.25,0.5)$}{$\alpha$};
+        \newAndNode[draw=red,very thick,inputs=nn]{p1}{$(r) + (0.75,-1)$};
+        \newAndNode[draw=red,very thick,inputs=nn]{p12}{$(r) + (-0.75,-1)$};
+        \newNamedOrNode[draw=red,very thick,inputs=nn]{s1}{$(p1.input 1) + (0,-1)$}{\tiny$\beta\wedge\overline{A}$};
+        \newNamedOrNode[draw=red,very thick,inputs=nn]{s12}{$(p12.input 1) + (0,-1)$}{\tiny$\beta\wedge A$};
+        \newNamedOrNode[inputs=nn]{s2}{$(p1.input 2) + (1.25,-1)$}{$\gamma$};
+        \newAndNode[inputs=nn]{p2}{$(s12.west) + (0,-1)$};
+        \newAndNode[inputs=nn]{p3}{$(s1.west) + (0,-1)$};
+        \newOrNode[inputs=nn]{s3}{$(p2.input 2) + (0.5,-1)$};
+        \newOrNode[inputs=nn]{s4}{$(p3.input 2) + (0.5,-1)$};
+      \end{scope}
+
+      \node (a) at ($(p2.input 1) + (0.0,-1)$) {$A$};
+      \node (na) at ($(p3.input 1) + (0.0,-1)$) {$\neg A$};
+      \draw[edge,draw=red,very thick] (r.input 1) -- ++(0,-0.15) -| (p12.east);
+      \draw[edge,draw=red,very thick] (r.input 2) -- ++(0,-0.15) -| (p1.east);
+      \draw[edge,draw=red,very thick] (p1.input 1) -- (s1.east);
+      \draw[edge,draw=red,very thick] (p1.input 2) -- ++(0,-0.25) -| (s2.east);
+      \draw[edge,draw=red,very thick] (p12.input 2) -- ++(0,-0.35) -| (s2.east);
+      \draw[edge,draw=red,very thick] (p12.input 1) -- (s12.east);
+      \draw[edge] (s12.west) -- ++(0,-0.25) -| (p2.east);
+      \draw[edge] (s1.west) -- ++(0,-0.25) -| (p3.east);
+      \draw[edge] (p2.input 1) -- (a);
+      \draw[edge] (p2.input 2) -- ++(0,-0.25) -| (s3.east);
+      \draw[edge] (p3.input 1) -- (na);
+      \draw[edge] (p3.input 2) -- ++(0,-0.25) -| (s4.east);
+  \end{tikzpicture}
+  \vskip 0.5cm
+  \begin{tikzpicture}
+    \newNamedOrNode[draw=red,very thick,inputs=nn]{s1}{0,-1.5}{$\alpha$};
+    \newAndNode[inputs=nn]{r1}{-1,0};
+    \newAndNode[inputs=nn]{r2}{1,0};
+    \newAndNode[inputs=nn]{p1}{$(r1)+(0,-3)$};
+    \newAndNode[inputs=nn]{p2}{$(r2)+(0,-3)$};
+    \newOrNode[inputs=nn]{l11}{$(p1.input 1)+(0,-1.5)$};
+    \newOrNode[inputs=nn]{l12}{$(p1.input 2)+(1,-1.5)$};
+    \newOrNode[inputs=nn]{l21}{$(p2.input 1)+(0,-1.5)$};
+    \newOrNode[inputs=nn]{l22}{$(p2.input 2)+(1,-1.5)$};
+    \draw[edge] (r1.west) -- ++(0,-0.25) -| (s1.east);
+    \draw[edge,draw=red,very thick] (r2.west) -- ++(0,-0.25) -| (s1.east);
+    \draw[edge] (s1.input 1) -- ++(0,-0.25) -| (p1.east);
+    \draw[edge] (s1.input 2) -- ++(0,-0.25) -| (p2.east);
+    \draw[edge] (p1.input 1) -- ++(0,-0.25) -| (l11.east);
+    \draw[edge] (p1.input 2) -- ++(0,-0.25) -| (l12.east);
+    \draw[edge] (p2.input 1) -- ++(0,-0.25) -| (l21.east);
+    \draw[edge] (p2.input 2) -- ++(0,-0.25) -| (l22.east);
+
+    \node[style={single arrow,draw=red,thick}] (arrow) at (2.5,-0.5)
+      {\small\textrm{\textsc{Clone}}};
+
+    \newAndNode[inputs=nn]{r1}{4.25,0};
+    \newAndNode[inputs=nn]{r2}{6.25,0};
+    \newAndNode[inputs=nn]{p1}{$(r1)+(-0.5,-3)$};
+    \newAndNode[inputs=nn]{p2}{$(r2)+(-0.5,-3)$};
+    \newOrNode[inputs=nn]{l11}{$(p1.input 1)+(0,-1.5)$};
+    \newOrNode[inputs=nn]{l12}{$(p1.input 2)+(1,-1.5)$};
+    \newOrNode[inputs=nn]{l21}{$(p2.input 1)+(0,-1.5)$};
+    \newOrNode[inputs=nn]{l22}{$(p2.input 2)+(1,-1.5)$};
+    \newNamedOrNode[draw=red,very thick,inputs=nn]{s1}{$(r1.west) + (0,-1)$}{$\alpha$};
+    \newNamedOrNode[draw=red,very thick,inputs=nn]{s2}{$(r2.west) + (0,-1)$}{$\alpha$};
+    \newAndNode[draw=red,very thick,inputs=nn]{p3}{$(p1)+(1,0)$};
+    \newAndNode[draw=red,very thick,inputs=nn]{p4}{$(p2)+(1,0)$};
+    \draw[edge] (r1.west) -- ++(0,-0.25) -| (s1.east);
+    \draw[edge,draw=red,very thick] (r2.west) -- ++(0,-0.25) -| (s2.east);
+    \draw[edge] (s1.input 1) -- ++(0,-0.5) -| (p1.east);
+    \draw[edge] (s1.input 2) -- ++(0,-0.5) -| (p2.east);
+    \draw[edge,draw=red,very thick] (s2.input 1) -- ++(0,-0.25) -| (p3.east);
+    \draw[edge,draw=red,very thick] (s2.input 2) -- ++(0,-0.25) -| (p4.east);
+    \draw[edge] (p1.input 1) -- ++(0,-0.25) -| (l11.east);
+    \draw[edge] (p1.input 2) -- ++(0,-0.5) -| (l12.east);
+    \draw[edge] (p2.input 1) -- ++(0,-0.25) -| (l21.east);
+    \draw[edge] (p2.input 2) -- ++(0,-0.5) -| (l22.east);
+    \draw[edge,draw=red,very thick] (p3.input 1) -- ++(0,-0.25) -| (l11.east);
+    \draw[edge,draw=red,very thick] (p3.input 2) -- ++(0,-0.5) -| (l12.east);
+    \draw[edge,draw=red,very thick] (p4.input 1) -- ++(0,-0.25) -| (l21.east);
+    \draw[edge,draw=red,very thick] (p4.input 2) -- ++(0,-0.5) -| (l22.east);
+  \end{tikzpicture}
+\end{center}
+\end{minipage}}
+
+% Slide: SamplePSDD 1
+
+\newpage
+
+\newtitle{\textproc{SamplePSDD}}
 
 \vskip 1cm
 \begin{center}
@@ -1745,17 +1902,18 @@ in
 \end{center}
 
 
-% Slide: SamplePSDD -- How? 2
+% Slide: SamplePSDD
 
 \newpage
 
-\newtitle{\textproc{SamplePSDD} -- How?}
+\newtitle{\textproc{SamplePSDD}}
+\vskip 1cm
 
 \begin{center}
   \resizebox{!}{2em}{
     \colorbox{boxteal!60}{\textbf{{Solution:}}} randomly sample a bounded number ($k$) of \textcolor{pviolet}{$p_i$}
   }
-  \vskip 0.5cm
+  \vskip 1cm
 
   \resizebox{!}{0.5\textheight}{
     \begin{tikzpicture}
@@ -1810,23 +1968,421 @@ in
       \node at ($(nr) + (0,-2.5)$) {$\set{S}=\{D,E\}$};
     \end{tikzpicture}
   }
-  \vskip 0.5cm
+  \vskip 1cm
 
   \resizebox{!}{2em}{
-    \colorbox{pyellow}{\textbf{But:}} this \textcolor{Red}{violates structure decomposability}:
+    \colorbox{pyellow}{\textbf{But:}} this \textcolor{Red}{violates structured decomposability}:
   }
-  \vskip 0.25cm
+  \vskip 0.5cm
 
-  \resizebox{!}{2.5em}{
-    \centering
-    \begin{minipage}{0.5\textwidth}
-      \flushleft
-      \textcolor{psandy}{$\neg C\wedge D$} contains $C$, and $C\not\in\mathcal{S}$
+  \resizebox{!}{2.25em}{
+    \begin{minipage}{0.25\textwidth}
+      \textcolor{psandy}{$\neg C\wedge D$} contains $C$, and $C\not\in\set{S}$
 
-      \textcolor{psandy}{$\neg B\wedge\neg C\wedge D$} contains $B$ and $C$, and $B,C\not\in\mathcal{S}$
+      \textcolor{psandy}{$\neg B\wedge\neg C\wedge D$} contains $B$ and $C$, and $B,C\not\in\set{S}$
     \end{minipage}
   }
 \end{center}
+
+% Slide: SamplePSDD 3
+
+\newpage
+
+\newtitle{\textproc{SamplePSDD}}
+
+\vskip 1cm
+\begin{center}
+\begin{minipage}{0.4\textwidth}
+  \resizebox{\textwidth}{!}{
+    \begin{minipage}{0.6\textwidth}
+      \colorbox{boxteal!70}{\textbf{New solution:}}  relax logical constraints $\phi$
+    \end{minipage}
+  }
+\end{minipage}
+\vskip 1.0cm
+\begin{center}
+\resizebox{0.65\textwidth}{!}{
+  \begin{tikzpicture}
+    \newNamedOrNode[fill=boxgreen,inputs=nnn]{r}{0,0}{1};
+    \newNamedAndNode[fill=boxblue,inputs=nn]{a1}{$(r) + (-2.0,-1.5)$}{$e_1$};
+    \newNamedAndNode[fill=boxorange,inputs=nn]{a2}{$(r) + (0.0,-1.5)$}{$e_2$};
+    \newNamedAndNode[fill=boxpink!80,inputs=nn]{a3}{$(r) + (2.0,-1.5)$}{$e_3$};
+
+    \node (p1) at ($(a1.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge B$};
+    \node (p2) at ($(a2.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge\neg B$};
+    \node (p3) at ($(a3.input 1) + (-0.7,-0.75)$) {\color{pviolet}$\neg A$};
+    \node (s1) at ($(a1.input 2) + (0,-1.25)$) {\color{psandy}$D$};
+    \node (s2) at ($(a2.input 2) + (0,-1.25)$) {\color{psandy}$\neg D$};
+    \node (s3) at ($(a3.input 2) + (0,-1.25)$) {\color{psandy}$D$};
+
+    \draw[edge] (r.input 1) -- ++(0,-0.3) -| (a1);
+    \draw[edge] (r.input 2) -- ++(0,-0.3) -| (a2);
+    \draw[edge] (r.input 3) -- ++(0,-0.3) -| (a3);
+    \draw[edge] (a1.input 1) -- ++(0,-0.3) -| (p1);
+    \draw[edge] (a2.input 1) -- ++(0,-0.3) -| (p2);
+    \draw[edge] (a3.input 1) -- ++(0,-0.3) -| (p3);
+    \draw[edge] (a1.input 2) -- ++(0,-0.4) -| (s1);
+    \draw[edge] (a2.input 2) -- ++(0,-0.4) -| (s2);
+    \draw[edge] (a3.input 2) -- ++(0,-0.4) -| (s3);
+
+    \tikzstyle{dec} = [draw,circle,inner sep=1pt,fill=pyellow!70];
+    \node[dec,label={[label distance=5pt] right:\small$\phi\!=\!(A\wedge \neg B \wedge \neg D) \vee (B \wedge \neg C \wedge D)$}] (root) at (5,0) {A};
+    \node[dec] (n1) at ($(root) + (+0.75,-1.15)$) {B};
+    \node[dec,label={[label distance=5pt] right:\small$\phi|_{A}$}] (n2) at ($(root) + (-0.75,-1.25)$) {B};
+    \node[dec] (n3) at ($(n2) + (+0.75,-1.15)$) {C};
+    \node[dec] (n4) at ($(n2) + (-0.75,-1.25)$) {C};
+    \draw (root) edge node[label={right:$-$}] {} (n1);
+    \draw (root) edge node[label={left:$+$}] {} (n2);
+    \draw (n2) edge node[label={right:$-$}] {} (n3);
+    \draw (n2) edge node[label={left:$+$}] {} (n4);
+
+    \node[anchor=west]  at ($(n1) + (0.4,0)$) {\small $\Forget(\phi|_{\neg A}, \{B,C\})=D$};
+    \node[anchor=west]  at ($(n3) + (+0.4,0)$) {\small $\Forget(\phi|_{A \wedge \neg B}, C)=\neg D$};
+    \node[anchor=west]  at ($(n4) + (-0.1,-0.5)$) {\small $\Forget(\phi|_{A \wedge B}, C)=D$};
+ \end{tikzpicture}
+}
+\end{center}
+\begin{center}
+  \resizebox{0.5\textwidth}{!}{
+  \begin{tikzpicture}
+    \newVtreeNode{root}{6,0}{1};
+    \node at ($(root) + (-6,-1.5)$) {\Large{}Now all \textcolor{pviolet}{$s_i$} respect $\set{S}$};
+    \newVtreeNode{n1}{$(root) + (-1.0,-1.25)$}{2};
+    \newVtreeNode{nr}{$(root) + (1.0,-1.25)$}{3};
+    \newVtreeNode{n2}{$(nr) + (-0.5,-1.25)$}{$D$};
+    \newVtreeNode{ne}{$(nr) + (0.5,-1.25)$}{$E$};
+    \newVtreeNode{n3}{$(n1) + (-0.5,-1.25)$}{4};
+    \newVtreeNode{n4}{$(n1) + (0.5,-1.25)$}{$C$};
+    \newVtreeNode{n5}{$(n3) + (-0.5,-1.25)$}{$A$};
+    \newVtreeNode{n6}{$(n3) + (0.5,-1.25)$}{$B$};
+    \draw (root) -- (n1);
+    \draw (n1) -- (n3);
+    \draw (root) -- (nr);
+    \draw (nr) -- (n2);
+    \draw (nr) -- (ne);
+    \draw (n1) -- (n3);
+    \draw (n1) -- (n4);
+    \draw (n3) -- (n6);
+    \draw (n3) -- (n5);
+    \draw[very thick,dashed,pbrickred] ($(n2) + (-0.5,1.7)$) rectangle ($(ne) + (0.5,-0.4)$);
+    \node at ($(nr) + (0.75,0.75)$) {$\set{S}$};
+    \node at ($(nr) + (0,-2.5)$) {$\set{S}=\{D,E\}$};
+  \end{tikzpicture}
+  }
+\end{center}
+\end{center}
+
+% Slide: SamplePSDD 4
+
+\newpage
+
+\newtitle{\textproc{SamplePSDD}}
+
+\vskip 1cm
+\begin{center}
+\begin{minipage}{0.6\textwidth}
+  \resizebox{\textwidth}{!}{
+    \begin{minipage}{0.6\textwidth}
+      \centering
+      Apply \colorbox{boxblue!70}{\textbf{local transformations}} for variety and size reduction
+    \end{minipage}
+  }
+\end{minipage}
+\end{center}
+\vskip 0.5cm
+\begin{center}
+  \resizebox{0.65\textwidth}{!}{
+  \begin{tikzpicture}
+    \newNamedOrNode[fill=boxgreen,inputs=nnn]{r}{-0.25,0}{1};
+    \newNamedAndNode[fill=boxblue,inputs=nn]{a1}{$(r) + (-2.0,-1.5)$}{$\mathbf{e_1}$};
+    \newNamedAndNode[fill=boxorange,inputs=nn]{a2}{$(r) + (0.0,-1.5)$}{$e_2$};
+    \newNamedAndNode[fill=boxpink!80,inputs=nn]{a3}{$(r) + (2.0,-1.5)$}{$\mathbf{e_3}$};
+
+    \node (p1) at ($(a1.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge B$};
+    \node (p2) at ($(a2.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge\neg B$};
+    \node (p3) at ($(a3.input 1) + (-0.7,-0.75)$) {\color{pviolet}$\neg A$};
+    \node (s1) at ($(a1.input 2) + (0,-1.25)$) {\color{psandy}$D$};
+    \node (s2) at ($(a2.input 2) + (0,-1.25)$) {\color{psandy}$\neg D$};
+    \node (s3) at ($(a3.input 2) + (0,-1.25)$) {\color{psandy}$D$};
+
+    \draw[edge] (r.input 1) -- ++(0,-0.3) -| (a1);
+    \draw[edge] (r.input 2) -- ++(0,-0.3) -| (a2);
+    \draw[edge] (r.input 3) -- ++(0,-0.3) -| (a3);
+    \draw[edge] (a1.input 1) -- ++(0,-0.3) -| (p1);
+    \draw[edge] (a2.input 1) -- ++(0,-0.3) -| (p2);
+    \draw[edge] (a3.input 1) -- ++(0,-0.3) -| (p3);
+    \draw[edge] (a1.input 2) -- ++(0,-0.4) -| (s1);
+    \draw[edge] (a2.input 2) -- ++(0,-0.4) -| (s2);
+    \draw[edge] (a3.input 2) -- ++(0,-0.4) -| (s3);
+
+    \node[style={single arrow,draw=red,thick}] (arrow) at (4.25,-0.5)
+      {\small\textrm{\textsc{Compress}}};
+
+    \newNamedOrNode[fill=boxgreen,inputs=nn]{r}{8.25,0}{1};
+    \newNamedAndNode[fill=boxorange,inputs=nn]{a1}{$(r) + (-1.5,-1.5)$}{$e_2$};
+    \newNamedAndNode[fill=boxteal,inputs=nn]{a2}{$(r) + (1.5,-1.5)$}{$\mathbf{e'}$};
+
+    \node (p1) at ($(a1.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge\neg B$};
+    \node (p2) at ($(a2.input 1) + (-1.2,-0.75)$) {\color{pviolet}$\neg A\vee(A\wedge B)$};
+    \node (s1) at ($(a1.input 2) + (0,-1.25)$) {\color{psandy}$\neg D$};
+    \node (s2) at ($(a2.input 2) + (0,-1.25)$) {\color{psandy}$D$};
+
+    \draw[edge] (r.input 1) -- ++(0,-0.3) -| (a1);
+    \draw[edge] (r.input 2) -- ++(0,-0.3) -| (a2);
+    \draw[edge] (a1.input 1) -- ++(0,-0.3) -| (p1);
+    \draw[edge] (a2.input 1) -- ++(0,-0.3) -| (p2);
+    \draw[edge] (a1.input 2) -- ++(0,-0.4) -| (s1);
+    \draw[edge] (a2.input 2) -- ++(0,-0.4) -| (s2);
+  \end{tikzpicture}
+  }
+  \vskip 0.5cm
+  \resizebox{0.65\textwidth}{!}{
+    \begin{tikzpicture}
+      \newNamedOrNode[fill=boxgreen,inputs=nnn]{r}{0,0}{1};
+      \newNamedAndNode[fill=boxblue,inputs=nn]{a1}{$(r) + (-2.0,-1.5)$}{$e_1$};
+      \newNamedAndNode[fill=boxorange,inputs=nn]{a2}{$(r) + (0.0,-1.5)$}{$e_2$};
+      \newNamedAndNode[fill=boxpink!80,inputs=nn]{a3}{$(r) + (2.0,-1.5)$}{$\mathbf{e_3}$};
+
+      \node (p1) at ($(a1.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge B$};
+      \node (p2) at ($(a2.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge\neg B$};
+      \node (p3) at ($(a3.input 1) + (-0.7,-0.75)$) {\color{pviolet}$\neg A$};
+      \node (s1) at ($(a1.input 2) + (0,-1.25)$) {\color{psandy}$D$};
+      \node (s2) at ($(a2.input 2) + (0,-1.25)$) {\color{psandy}$\neg D$};
+      \node (s3) at ($(a3.input 2) + (0,-1.25)$) {\color{psandy}$D$};
+
+      \draw[edge] (r.input 1) -- ++(0,-0.3) -| (a1);
+      \draw[edge] (r.input 2) -- ++(0,-0.3) -| (a2);
+      \draw[edge] (r.input 3) -- ++(0,-0.3) -| (a3);
+      \draw[edge] (a1.input 1) -- ++(0,-0.3) -| (p1);
+      \draw[edge] (a2.input 1) -- ++(0,-0.3) -| (p2);
+      \draw[edge] (a3.input 1) -- ++(0,-0.3) -| (p3);
+      \draw[edge] (a1.input 2) -- ++(0,-0.4) -| (s1);
+      \draw[edge] (a2.input 2) -- ++(0,-0.4) -| (s2);
+      \draw[edge] (a3.input 2) -- ++(0,-0.4) -| (s3);
+
+      \node[style={single arrow,draw=red,thick}] (arrow) at (4.25,-0.5)
+        {\small\textrm{\textsc{Merge}}};
+
+      \newNamedOrNode[fill=boxgreen,inputs=nnn]{r}{8.5,0}{1};
+      \newNamedAndNode[fill=boxblue,inputs=nn]{a1}{$(r) + (-2.0,-1.5)$}{$\mathbf{e_1}$};
+      \newNamedAndNode[fill=boxorange,inputs=nn]{a2}{$(r) + (0.0,-1.5)$}{$e_2$};
+      \newNamedAndNode[fill=boxpink!80,inputs=nn]{a3}{$(r) + (2.0,-1.5)$}{$\mathbf{e_3}$};
+
+      \node (p1) at ($(a1.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge B$};
+      \node (p2) at ($(a2.input 1) + (-0.6,-0.75)$) {\color{pviolet}$A\wedge\neg B$};
+      \node (p3) at ($(a3.input 1) + (-0.7,-0.75)$) {\color{pviolet}$\neg A$};
+      \node (s) at ($(a2) + (0,-2.5)$) {\color{psandy}$D$};
+      \node (s2) at ($(a2.input 2) + (0,-1.25)$) {\color{psandy}$\neg D$};
+
+      \draw[edge] (r.input 1) -- ++(0,-0.3) -| (a1);
+      \draw[edge] (r.input 2) -- ++(0,-0.3) -| (a2);
+      \draw[edge] (r.input 3) -- ++(0,-0.3) -| (a3);
+      \draw[edge] (a1.input 1) -- ++(0,-0.3) -| (p1);
+      \draw[edge] (a2.input 1) -- ++(0,-0.3) -| (p2);
+      \draw[edge] (a3.input 1) -- ++(0,-0.3) -| (p3);
+      \draw[edge] (a1.input 2) -- ++(0,-1.6) -| (s);
+      \draw[edge] (a2.input 2) -- ++(0,-0.4) -| (s2);
+      \draw[edge] (a3.input 2) -- ++(0,-1.6) -| (s);
+    \end{tikzpicture}
+  }
+\end{center}
+\vskip -0.5cm
+\textcolor{boxdgray}{\cite{darwiche11}}
+
+% Slide: SamplePSDD - Experiments 1
+\newpage
+
+\newtitle{\textproc{SamplePSDD} -- Experiments}
+
+\vskip 0.25cm
+\resizebox{0.495\textwidth}{!}{
+\begin{minipage}{0.39\textwidth}
+  \noindent
+  \colorbox{pyellow}{\textbf{\underline{Evaluation:}}} we sample 30 PSDDs and use 5 ensemble strategies:
+  \vskip 0.25cm
+  \begin{enumerate}[nosep]
+    \item[\llwi] \textcolor{llw}{\textbf{Likelihood weighting (LLW)}},
+    \item[\unifi] \textcolor{llw}{\textbf{Uniform weights}},
+    \item[\emi] \textcolor{llw}{\textbf{Expectation Maximization (EM)}},
+    \item[\stacki] \textcolor{llw}{\textbf{Stacking}},
+    \item[\bmci] \textcolor{llw}{\textbf{Bayesian Model Combination (BMC)}};
+  \end{enumerate}
+  \vskip 0.25cm
+  \hskip 0.25cm comparing against \textcolor{unif}{\textbf{\textsc{Strudel}}},
+    \textcolor{unif}{\textbf{\textsc{LearnPSDD}}} and \textcolor{unif}{\textbf{\textsc{LearnSPN}}}.
+  \vskip 0.25cm
+  \colorbox{pyellow}{\textbf{\underline{Datasets:}}} we evaluate with 5 data + knowledge as logic constraints:
+  \vskip 0.25cm
+  \begin{center}
+    \begin{tabular}{cl|rrrr}
+      \cline{2-5}
+      &\textbf{Dataset} & \textbf{\#vars} & \textbf{\#train} & \textbf{$\phi$'s size}\\
+      \cline{2-5}
+      $\Rightarrow$&\textsc{LED} & 14 & 5000 & 23 \\
+      $\Rightarrow$&\textsc{LED} + \textsc{Images} & 157 & 700 & 39899 \\
+      &\textsc{Sushi Ranking} & 100 & 3500 & 17413 \\
+      &\textsc{Sushi Top 5} & 10 & 3500 & 37 \\
+      &\textsc{Dota 2 Games} & 227 & 92650 & 1308 \\
+      \cline{2-5}
+    \end{tabular}
+  \end{center}
+  \begin{align*}
+    \text{Our approach }&\text{\colorbox{boxblue!70}{fares \textbf{better} with \textbf{fewer} data}, yet}\\
+                        &\text{\colorbox{boxgreen!70}{remains \textbf{competitive} under \textbf{lots of data}}.}
+  \end{align*}
+  \vskip 0.1cm
+  \textcolor{darkgray}{\cite{mattei20b,kamishima03,shen17},}
+
+  \textcolor{darkgray}{\cite{choi15,gens13,dang20}}
+\end{minipage}}\resizebox{0.495\textwidth}{!}{\begin{minipage}{0.4\textwidth}
+  \begin{center}
+    \includegraphics[width=0.765\textwidth]{figures/bic_ll_led_ensembles.pdf}\\
+    \vskip -0.97cm
+    \includegraphics[width=0.765\textwidth]{figures/bic_ll_led_pixels_ensembles.pdf}
+  \end{center}
+\end{minipage}}
+
+% Slide: SamplePSDD - Experiments 2
+\newpage
+
+\newtitle{\textproc{SamplePSDD} -- Experiments}
+
+\vskip 0.25cm
+\resizebox{0.495\textwidth}{!}{
+\begin{minipage}{0.39\textwidth}
+  \noindent
+  \colorbox{pyellow}{\textbf{\underline{Evaluation:}}} we sample 30 PSDDs and use 5 ensemble strategies:
+  \vskip 0.25cm
+  \begin{enumerate}[nosep]
+    \item[\llwi]\textcolor{llw}{\textbf{Likelihood weighting (LLW)}},
+    \item[\unifi] \textcolor{llw}{\textbf{Uniform weights}},
+    \item[\emi] \textcolor{llw}{\textbf{Expectation Maximization (EM)}},
+    \item[\stacki] \textcolor{llw}{\textbf{Stacking}},
+    \item[\bmci] \textcolor{llw}{\textbf{Bayesian Model Combination (BMC)}};
+  \end{enumerate}
+  \vskip 0.25cm
+  \hskip 0.25cm comparing against \textcolor{unif}{\textbf{\textsc{Strudel}}},
+    \textcolor{unif}{\textbf{\textsc{LearnPSDD}}} and \textcolor{unif}{\textbf{\textsc{LearnSPN}}}.
+  \vskip 0.25cm
+  \colorbox{pyellow}{\textbf{\underline{Datasets:}}} we evaluate with 5 data + knowledge as logic constraints:
+  \vskip 0.25cm
+  \begin{center}
+    \begin{tabular}{cl|rrrr}
+      \cline{2-5}
+      &\textbf{Dataset} & \textbf{\#vars} & \textbf{\#train} & \textbf{$\phi$'s size}\\
+      \cline{2-5}
+      &\textsc{LED} & 14 & 5000 & 23 \\
+      &\textsc{LED} + \textsc{Images} & 157 & 700 & 39899 \\
+      $\Rightarrow$&\textsc{Sushi Ranking} & 100 & 3500 & 17413 \\
+      $\Rightarrow$&\textsc{Sushi Top 5} & 10 & 3500 & 37 \\
+      &\textsc{Dota 2 Games} & 227 & 92650 & 1308 \\
+      \cline{2-5}
+    \end{tabular}
+  \end{center}
+  \begin{align*}
+    \text{Our approach }&\text{\colorbox{boxblue!70}{fares \textbf{better} with \textbf{fewer} data}, yet}\\
+                        &\text{\colorbox{boxgreen!70}{remains \textbf{competitive} under \textbf{lots of data}}.}
+  \end{align*}
+  \vskip 0.1cm
+  \textcolor{darkgray}{\cite{mattei20b,kamishima03,shen17},}
+
+  \textcolor{darkgray}{\cite{choi15,gens13,dang20}}
+\end{minipage}}\resizebox{0.495\textwidth}{!}{\begin{minipage}{0.4\textwidth}
+  \begin{center}
+    \includegraphics[width=0.765\textwidth]{figures/bic_ll_sushi_ranking_ensembles.pdf}\\
+    \vskip -0.97cm
+    \includegraphics[width=0.765\textwidth]{figures/bic_ll_sushi_choose_ensembles.pdf}
+  \end{center}
+\end{minipage}}
+
+% Slide: SamplePSDD - Experiments 3
+\newpage
+
+\newtitle{\textproc{SamplePSDD} -- Experiments}
+
+\vskip 0.25cm
+\resizebox{0.495\textwidth}{!}{
+\begin{minipage}{0.39\textwidth}
+  \noindent
+  \colorbox{pyellow}{\textbf{\underline{Evaluation:}}} we sample 30 PSDDs and use 5 ensemble strategies:
+  \vskip 0.25cm
+  \begin{enumerate}[nosep]
+    \item[\llwi] \textcolor{llw}{\textbf{Likelihood weighting (LLW)}},
+    \item[\unifi] \textcolor{llw}{\textbf{Uniform weights}},
+    \item[\emi] \textcolor{llw}{\textbf{Expectation Maximization (EM)}},
+    \item[\stacki] \textcolor{llw}{\textbf{Stacking}},
+    \item[\bmci] \textcolor{llw}{\textbf{Bayesian Model Combination (BMC)}};
+  \end{enumerate}
+  \vskip 0.25cm
+  \hskip 0.25cm comparing against \textcolor{unif}{\textbf{\textsc{Strudel}}},
+    \textcolor{unif}{\textbf{\textsc{LearnPSDD}}} and \textcolor{unif}{\textbf{\textsc{LearnSPN}}}.
+  \vskip 0.25cm
+  \colorbox{pyellow}{\textbf{\underline{Datasets:}}} we evaluate with 5 data + knowledge as logic constraints:
+  \vskip 0.25cm
+  \begin{center}
+    \begin{tabular}{cl|rrrr}
+      \cline{2-5}
+      &\textbf{Dataset} & \textbf{\#vars} & \textbf{\#train} & \textbf{$\phi$'s size}\\
+      \cline{2-5}
+      &\textsc{LED} & 14 & 5000 & 23 \\
+      &\textsc{LED} + \textsc{Images} & 157 & 700 & 39899 \\
+      &\textsc{Sushi Ranking} & 100 & 3500 & 17413 \\
+      &\textsc{Sushi Top 5} & 10 & 3500 & 37 \\
+      $\Rightarrow$&\textsc{Dota 2 Games} & 227 & 92650 & 1308 \\
+      \cline{2-5}
+    \end{tabular}
+  \end{center}
+  \begin{align*}
+    \text{Our approach }&\text{\colorbox{boxblue!70}{fares \textbf{better} with \textbf{fewer} data}, yet}\\
+                        &\text{\colorbox{boxgreen!70}{remains \textbf{competitive} under \textbf{lots of data}}.}
+  \end{align*}
+  \vskip 0.1cm
+  \textcolor{darkgray}{\cite{mattei20b,kamishima03,shen17},}
+
+  \textcolor{darkgray}{\cite{choi15,gens13,dang20}}
+\end{minipage}}\resizebox{0.495\textwidth}{!}{\begin{minipage}{0.4\textwidth}
+  \begin{center}
+    \includegraphics[width=0.765\textwidth]{figures/bic_ll_dota_ensembles.pdf}\\
+    \vskip -0.97cm
+    \includegraphics[width=0.765\textwidth]{figures/all_sushi_time.pdf}
+  \end{center}
+\end{minipage}}
+
+% Slide: SamplePSDD - Experiments 4
+\newpage
+
+\newtitle{\textproc{SamplePSDD} -- Experiments}
+
+\begin{center}
+\vskip -0.7cm
+\resizebox{0.4\textwidth}{!}{
+  \begin{minipage}{0.35\textwidth}
+    \begin{align*}
+      \text{What is the impact of }&\text{\colorbox{boxgreen!70}{higher $k$'s} and \colorbox{pyellow}{right-leaning vtrees}}\\
+                         \text{in }&\text{\colorbox{boxblue!70}{log-likelihood} and \colorbox{Red}{\color{white}consistency}}?
+    \end{align*}
+  \end{minipage}
+}
+\vskip 0.25cm
+\begin{center}
+  \includegraphics[width=0.3\textwidth]{figures/vtree_ll_imp_sushi.pdf}
+  \includegraphics[width=0.3\textwidth]{figures/k_ll_imp_sushi.pdf}
+\end{center}
+\vskip -0.5cm
+\resizebox{0.4\textwidth}{!}{
+  \begin{minipage}{0.4\textwidth}
+    \begin{align*}
+      \text{Samples perform }&\text{\colorbox{boxgreen!70}{\textbf{better} with higher $k$'s} and \colorbox{pyellow}{right-leaning vtrees}...}\\
+                   \text{...}&\text{but at a \colorbox{boxorange!70}{\textbf{cost} to complexity}.}
+    \end{align*}
+  \end{minipage}
+}
+\begin{center}
+  \includegraphics[width=0.3\textwidth]{figures/vtree_complexity.pdf}
+  \includegraphics[width=0.3\textwidth]{figures/k_complexity.pdf}
+\end{center}
+\end{center}
+
 
 \nobibliography{refs.bib}
 
