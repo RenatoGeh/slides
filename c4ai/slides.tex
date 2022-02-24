@@ -91,6 +91,20 @@
 \newlist{checks}{itemize}{2}
 \setlist[checks]{label=$\square$,align=left,labelindent=*}
 
+
+\DeclareFontFamily{U}{matha}{\hyphenchar\font45}
+\DeclareFontShape{U}{matha}{m}{n}{ <-6> matha5 <6-7> matha6 <7-8>
+matha7 <8-9> matha8 <9-10> matha9 <10-12> matha10 <12-> matha12 }{}
+\DeclareSymbolFont{matha}{U}{matha}{m}{n}
+%
+\DeclareFontFamily{U}{mathx}{\hyphenchar\font45}
+\DeclareFontShape{U}{mathx}{m}{n}{ <-6> mathx5 <6-7> mathx6 <7-8>
+mathx7 <8-9> mathx8 <9-10> mathx9 <10-12> mathx10 <12-> mathx12 }{}
+\DeclareSymbolFont{mathx}{U}{mathx}{m}{n}
+
+\DeclareMathDelimiter{\liv} {4}{matha}{"76}{mathx}{"30}
+\DeclareMathDelimiter{\riv} {5}{matha}{"77}{mathx}{"38}
+
 \newcommand{\bigo}{\mathcal{O}}
 \newcommand{\set}[1]{\mathbf{#1}}
 \DeclareMathOperator*{\argmin}{\normalfont{arg\,min}}
@@ -169,7 +183,8 @@
 \newcommand{\newMaxNode}[3][]{\node[circle,draw,inner sep=0pt,minimum size=12pt,thick,fill=blue!50!green!30,#1] (#2) at (#3) {\scriptsize$\bm{\uparrow}$}}
 \newcommand{\newMixNode}[3][]{\node[#1,circle,draw,inner sep=0pt,minimum size=12pt,thick,fill=blue!50!green!30] (#2) at (#3) {$\sum$}}
 \newcommand{\newProdNode}[3][]{\node[circle,draw,inner sep=0pt,minimum size=12pt,thick,fill=blue!50!red!30,#1] (#2) at (#3) {$\bm{\times}$}}
-\newcommand{\newLeafNode}[3][]{\node[circle,draw,inner sep=0pt,minimum size=12pt,thick,fill=orange!50!black!40,#1] (#2) at (#3) {$\bm{\bigcirc}$}}
+\newcommand{\newLeafNode}[3][]{\node[circle,draw,inner sep=0pt,minimum
+size=12pt,thick,fill=orange!50!black!40,#1] (#2) at (#3) {}; \node[circle,draw,inner sep=0pt,minimum size=5pt,line width=0.6pt] at (#3) {}}
 \newcommand{\newCellNode}[3][]{\node[#1,circle,draw,inner sep=0pt,minimum size=12pt,thick,fill=orange!50!black!40] (#2) at (#3) {$\bm{\Box}$}}
 \tikzset{sigmoid/.style={path picture={\begin{scope}[x=0.65pt,y=7pt] \draw plot[domain=-6:6](\x,{1/(1+exp(-1.5*\x))-0.5}); \end{scope}}}}
 \tikzset{gaussian/.style={path picture={\begin{scope}[x=1pt,y=10pt] \draw plot[domain=-4:4](\x,{exp(-\x*\x*0.5)/2.5-0.1}); \end{scope}}}}
@@ -215,6 +230,14 @@
 \tikzset{
   edge/.style = {->,>=latex'}
 }
+
+% If is final version
+%\def\isfinalversion{1}
+\ifx\isfinalversion\undefined
+  \newcommand{\nsamples}{5}
+\else
+  \newcommand{\nsamples}{50}
+\fi
 
 \newcommand{\drawOldGradient}[3]{%
 % #1: starting node
@@ -469,7 +492,7 @@ in
         }
       }
       \begin{axis}[
-        no markers, domain=-5:5, samples=35,
+        no markers, domain=-5:5, samples=\nsamples,
         height=3cm, width=5cm,
         xtick={0.8}, ytick={0.29},
         xticklabels={\colorbox{boxblue}{$\mathbf{0.8}$}},
@@ -537,7 +560,7 @@ in
         }
       }
       \begin{axis}[
-        no markers, domain=-1:6, samples=35,
+        no markers, domain=-1:6, samples=\nsamples,
         height=3.75cm, width=5cm,
         xtick={1.5}, ytick={0.2414},
         xticklabels={\colorbox{boxblue}{\textbf{1.5}}},
@@ -641,7 +664,7 @@ in
         }
       }
       \begin{axis}[
-        no markers, domain=-1:6, samples=35,
+        no markers, domain=-1:6, samples=\nsamples,
         height=3.75cm, width=5cm,
         xtick={1.5}, ytick={0.2414},
         xticklabels={\colorbox{boxblue}{\textbf{1.5}}},
@@ -753,7 +776,7 @@ in
         }
       }
       \begin{axis}[
-        no markers, domain=-1:6, samples=35,
+        no markers, domain=-1:6, samples=\nsamples,
         height=3.75cm, width=5cm,
         xtick={1.5}, ytick={0.07753},
         xticklabels={\colorbox{boxblue}{\textbf{1.5}}},
@@ -868,7 +891,7 @@ in
         }
       }
       \begin{axis}[
-        no markers, domain=0:7, samples=35,
+        no markers, domain=0:7, samples=\nsamples,
         width=5cm, height=3.5cm,
         xtick={2}, ytick={0.25},
         xticklabels={\colorbox{boxblue}{\textbf{2}}},
@@ -900,7 +923,7 @@ in
         }
       }
       \begin{axis}[
-        no markers, domain=1:7, samples=50,
+        no markers, domain=1:7, samples=\nsamples,
         width=5cm, height=3.5cm,
         xtick={4}, ytick={0.14},
         xticklabels={\colorbox{boxblue}{\textbf{4}}},
@@ -948,7 +971,7 @@ in
         grid = major
       ]
         \addplot3[
-          surf, samples=30,
+          surf, samples=\nsamples,
           domain=0.5:6.5,
           y domain=1:6
         ] {((0.3*exp(-((x-\xmone)^2)/(2*\xsone^2))/\xsone+0.7*exp(-((x-\xmtwo)^2)/(2*\xstwo^2))/\xstwo)/2.5066)*(((0.6*exp(-((y-\ymone)^2)/(2*\ysone^2))/\ysone+0.4*exp(-((y-\ymtwo)^2)/(2*\ystwo^2))/\ystwo)/2.5066))};
@@ -1058,7 +1081,7 @@ in
         }
       }
       \begin{axis}[
-        no markers, domain=0:7, samples=35,
+        no markers, domain=0:7, samples=\nsamples,
         width=5cm, height=4.0cm,
         xtick={2}, ytick={0.25},
         xticklabels={\colorbox{boxblue}{\textbf{2}}},
@@ -1090,7 +1113,7 @@ in
         }
       }
       \begin{axis}[
-        no markers, domain=1:7, samples=50,
+        no markers, domain=1:7, samples=\nsamples,
         width=5cm, height=4.0cm,
         xtick={4}, ytick={0.14},
         xticklabels={\colorbox{boxblue}{\textbf{4}}},
@@ -1579,11 +1602,21 @@ in
   }
 \end{vhcenterb}
 
+% Slide: A Logical Perspective
+
+\newpage
+
+\begin{vhcenterb}
+  \resizebox{!}{3em}{
+    \color{boxblue}A Logical Perspective
+  }
+\end{vhcenterb}
+
 % Slide: SamplePSDD - Why?
 
 \newpage
 
-\newtitle{\textproc{SamplePSDD} -- Why?}
+\newtitle{Motivation}
 \vspace*{-0.5cm}
 
 \begin{center}
@@ -1691,7 +1724,7 @@ in
 
 \newpage
 
-\newtitle{\textproc{SamplePSDD} -- Why?}
+\newtitle{Motivation}
 
 \vskip 0.5cm
 
@@ -2192,7 +2225,7 @@ in
 % Slide: SamplePSDD - Experiments 1
 \newpage
 
-\newtitle{\textproc{SamplePSDD} -- Experiments}
+\newtitle{Experiments}
 
 \vskip 0.25cm
 \resizebox{0.495\textwidth}{!}{
@@ -2245,7 +2278,7 @@ in
 % Slide: SamplePSDD - Experiments 2
 \newpage
 
-\newtitle{\textproc{SamplePSDD} -- Experiments}
+\newtitle{Experiments}
 
 \vskip 0.25cm
 \resizebox{0.495\textwidth}{!}{
@@ -2298,7 +2331,7 @@ in
 % Slide: SamplePSDD - Experiments 3
 \newpage
 
-\newtitle{\textproc{SamplePSDD} -- Experiments}
+\newtitle{Experiments}
 
 \vskip 0.25cm
 \resizebox{0.495\textwidth}{!}{
@@ -2351,7 +2384,7 @@ in
 % Slide: SamplePSDD - Experiments 4
 \newpage
 
-\newtitle{\textproc{SamplePSDD} -- Experiments}
+\newtitle{Experiments}
 
 \begin{center}
 \vskip -0.7cm
@@ -2383,6 +2416,124 @@ in
 \end{center}
 \end{center}
 
+% Slide: A Data Perspective
+
+\newpage
+
+\begin{vhcenterb}
+  \resizebox{!}{3em}{
+    \color{boxblue}A Data Perspective
+  }
+\end{vhcenterb}
+
+% Slide: LearnRP - Why? 1
+
+\newpage
+
+\newtitle{Motivation}
+
+\begin{vhcenterb}
+\begin{minipage}[t][0.8\textheight][t]{0.35\textwidth}
+  \vskip 0.5cm
+
+  \resizebox{\textwidth}{!}{
+    \fbox{
+  \begin{minipage}{0.7\textwidth}
+    {\large{}\textbf{Density Estimation Trees...}}
+
+    \begin{checks}
+      \item[\done] ...are fast;
+      \item[\done] ...are interpretable;
+      \item[\done] ...are (somewhat) explainable;
+      \item[\done] ...have extensive literature coverage;
+      \item[\wontfix] ...are not so expressive;
+      \item[\wontfix] ...only accept marginalization queries;
+      \item[\wontfix] ...are not so accurate.
+    \end{checks}
+  \end{minipage}
+}
+  }
+\end{minipage}
+\begin{minipage}[t][0.9\textheight][t]{0.3\textwidth}
+  \begin{vhcenterb}
+    \resizebox{!}{0.8\textheight}{
+    \begin{tikzpicture}
+      \fill[boxpink!30] (0,0) rectangle (2,2.5);
+      \fill[boxgoldenrod!40] (2,0) rectangle (3.5,2.5);
+      \draw[very thick,boxblue,dashed] (3.5,0) -- node[left,pos=0.9] {\color{boxblue}$\set{A}$} (3.5,5);
+      \draw[very thick,boxgreen,dashed] (0,2.5) -- node[right,pos=1] {\color{boxgreen}$\set{B}$} (3.5,2.5);
+      \draw[very thick,boxpurple!80,dashed] (2,0) -- node[above,pos=1] {\color{boxpurple}$\set{C}$} (2,2.5);
+      \node at (1,1.25) {$\Leaf_1$};
+      \node at (2.75,1.25) {$\Leaf_2$};
+      \node[circle,inner sep=0pt,minimum size=3pt,fill=black,label=above right:{$\set{x}$}] at (1.5,1.9) {};
+      \draw[very thick] (0,0) rectangle (5, 5);
+
+      \node[inner sep=1pt,minimum size=12pt,circle,fill=boxblue!80] (a) at (3,-1.0) {$\set{A}$}; \node[inner sep=1pt,minimum size=12pt,circle,fill=boxgreen!80] (b) at ($(a) + (-1,-1.5)$) {$\set{B}$};
+      \node[inner sep=1pt,minimum size=12pt,circle,fill=boxpurple!60] (c) at ($(b) + (1,-1.5)$) {$\set{C}$};
+      \node[draw,fill=boxpink!30] (l1) at ($(c) + (-1,-1.5)$) {$L_1$};
+      \node[draw,fill=boxgoldenrod!40] (l2) at ($(c) + (1,-1.5)$) {$L_2$};
+      \draw (a) -- node[below,pos=1] {$\vdots$} node[above right,pos=0.5] {$\set{x}\in\set{A}^+$} ($(a) + (1,-1.5)$);
+      \draw (a) -- node[above left,pos=0.5] {$\set{x}\in\set{A}^-$} (b);
+      \draw[edge,boxdgray] (a) edge[bend left=15] (b);
+      \draw (b) -- node[below,pos=1] {$\vdots$} node[above left,pos=0.5] {$\set{x}\in\set{B}^-$} ($(b) + (-1,-1.5)$);
+      \draw (b) -- node[above right,pos=0.5] {$\set{x}\in\set{B}^+$} (c);
+      \draw[edge,boxdgray] (b) edge[bend right=15] (c);
+      \draw (c) -- node[above left,pos=0.5] {$\set{x}\in\set{C}^-$} (l1);
+      \draw (c) -- node[above right,pos=0.5] {$\set{x}\in\set{C}^+$} (l2);
+      \draw[edge,boxdgray] (c) edge[bend left=15] (l1);
+    \end{tikzpicture}
+    }
+  \end{vhcenterb}
+\end{minipage}
+\begin{minipage}[t][0.9\textheight][t]{0.3\textwidth}
+  \begin{vhcenterb}
+    \resizebox{!}{0.8\textheight}{
+    \begin{tikzpicture}
+      \newSumNode[fill=boxblue!80,label=above left:{\color{boxblue}$\set{A}$}]{a}{9,2};
+      \newProdNode[fill=boxblue!80]{al}{$(a) + (-0.5,-1)$};
+      \newProdNode[fill=boxblue!80]{ar}{$(a) + (0.5,-1)$};
+      \newLeafNode[fill=boxblue!80,label=below:{$\left\liv\set{x}\in\set{A}^-\right\riv$}]{ai}{$(al) + (-1.0,-1)$};
+      \newLeafNode[fill=boxblue!80,label=below:{$\left\liv\set{x}\in\set{A}^+\right\riv$}]{nai}{$(ar) + (1.0,-1)$};
+      \draw[edge] (a) -- (al); \draw[edge] (al) -- (ai);
+      \draw[edge] (a) -- (ar); \draw[edge] (ar) -- (nai);
+      \draw[edge] (ar) -- node[inner sep=0pt,below,pos=1] {$\vdots$} ($(ar) + (0,-0.8)$);
+
+      \newSumNode[fill=boxgreen!80,label=above right:{\color{boxgreen}$\set{B}$}]{b}{$(al) + (0,-1)$};
+      \newProdNode[fill=boxgreen!80]{bl}{$(b) + (0,-1)$};
+      \newProdNode[fill=boxgreen!80]{br}{$(b) + (1,-1)$};
+      \newLeafNode[fill=boxgreen!80,label=below:{$\left\liv\set{x}\in\set{B}^-\right\riv$}]{bi}{$(bl) + (-1.0,-1)$};
+      \newLeafNode[fill=boxgreen!80,label=below:{$\left\liv\set{x}\in\set{B}^+\right\riv$}]{nbi}{$(br) + (1.0,-1)$};
+      \draw[edge] (al) -- (b);
+      \draw[edge] (b) -- (bl); \draw[edge] (bl) -- (bi);
+      \draw[edge] (b) -- (br); \draw[edge] (br) -- (nbi);
+      \draw[edge] (bl) -- node[inner sep=0pt,below,pos=1] {$\vdots$} ($(bl) + (0,-0.8)$);
+
+      \newSumNode[fill=boxpurple!60,label=above left:{\color{boxpurple}$\set{C}$}]{c}{$(br) + (0,-1)$};
+      \newProdNode[fill=boxpurple!60]{cl}{$(c) + (-1,-1)$};
+      \newProdNode[fill=boxpurple!60]{cr}{$(c) + (0,-1)$};
+      \newLeafNode[fill=boxpurple!60,label=below:{$\left\liv\set{x}\in\set{C}^-\right\riv$}]{ci}{$(cl) + (-1.0,-1)$};
+      \newLeafNode[fill=boxpurple!60,label=below:{$\left\liv\set{x}\in\set{C}^+\right\riv$}]{nci}{$(cr) + (1.0,-1)$};
+      \draw[edge] (br) -- (c);
+      \draw[edge] (c) -- (cr); \draw[edge] (cl) -- (ci);
+      \draw[edge] (c) -- (cl); \draw[edge] (cr) -- (nci);
+      \newGaussNode[label=below:{$\Leaf_1$},fill=boxpink!30]{l1}{$(cl) + (0,-1)$};
+      \newGaussNode[label=below:{$\Leaf_2$},fill=boxgoldenrod!40]{l2}{$(cr) + (0,-1)$};
+      \draw[edge] (cl) -- (l1);
+      \draw[edge] (cr) -- (l2);
+    \end{tikzpicture}
+    }
+  \end{vhcenterb}
+\end{minipage}
+\end{vhcenterb}
+
+% Slide: LearnRP - Why? 2
+
+%\newpage
+
+%\newtitle{\textproc{LearnRP} -- Why?}
+
+
+%\newpage
 
 \nobibliography{refs.bib}
 
