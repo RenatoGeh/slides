@@ -1318,6 +1318,37 @@ in
 \vskip 1cm
 \textcolor{boxdgray}{\cite{pipa08}}
 
+% Slide: PC - Tractability
+
+\newpage
+
+\newtitle{Probabilistic Circuits -- Tractability}
+
+\begin{vhcenterb}
+  \resizebox{0.75\textwidth}{!}{
+  \begin{tabular}{lcccc}
+    \hline
+    \textbf{Query} & \textbf{+Sm?} & \textbf{+Dec?} & \textbf{+Det?} & \textbf{+Str Dec?} \\
+    \hline
+    Evidence & \cmark & \cmark & \cmark & \cmark\\
+    Marginals & \xmark & \cmark & \cmark & \cmark\\
+    Conditionals & \xmark & \cmark & \cmark & \cmark\\
+    MPE & \xmark & \xmark & \cmark & \cmark\\
+    Shannon Entropy & \xmark & \xmark & \cmark & \cmark\\
+    Rényi Entropy & \xmark & \xmark & \cmark & \cmark\\
+    Cross Entropy & \xmark & \xmark & \xmark & \cmark\\
+    Kullback-Leibler Div& \xmark & \xmark & \xmark & \cmark\\
+    Rényi's Alpha Div & \xmark & \xmark & \xmark & \cmark\\
+    Cauchy-Schwarz Div & \xmark & \xmark & \xmark & \cmark\\
+    Logical Events & \xmark & \xmark & \xmark & \cmark\\
+    Mutual Information & \xmark & \xmark & \xmark & \cmark\\
+    \hline
+  \end{tabular}
+  }
+\end{vhcenterb}
+
+\textcolor{boxdgray}{\cite{vergari21,poon11,peharz16}}
+
 % Slide: PC - Logic Circuits
 
 \newpage
@@ -1487,37 +1518,6 @@ in
 \end{center}
 
 \textcolor{boxdgray}{\cite{kisa14}}
-
-% Slide: PC - Tractability
-
-\newpage
-
-\newtitle{Probabilistic Circuits -- Tractability}
-
-\begin{vhcenterb}
-  \resizebox{0.75\textwidth}{!}{
-  \begin{tabular}{lcccc}
-    \hline
-    \textbf{Query} & \textbf{+Sm?} & \textbf{+Dec?} & \textbf{+Det?} & \textbf{+Str Dec?} \\
-    \hline
-    Evidence & \cmark & \cmark & \cmark & \cmark\\
-    Marginals & \xmark & \cmark & \cmark & \cmark\\
-    Conditionals & \xmark & \cmark & \cmark & \cmark\\
-    MPE & \xmark & \xmark & \cmark & \cmark\\
-    Shannon Entropy & \xmark & \xmark & \cmark & \cmark\\
-    Rényi Entropy & \xmark & \xmark & \cmark & \cmark\\
-    Cross Entropy & \xmark & \xmark & \xmark & \cmark\\
-    Kullback-Leibler Div& \xmark & \xmark & \xmark & \cmark\\
-    Rényi's Alpha Div & \xmark & \xmark & \xmark & \cmark\\
-    Cauchy-Schwarz Div & \xmark & \xmark & \xmark & \cmark\\
-    Logical Events & \xmark & \xmark & \xmark & \cmark\\
-    Mutual Information & \xmark & \xmark & \xmark & \cmark\\
-    \hline
-  \end{tabular}
-  }
-\end{vhcenterb}
-
-\textcolor{boxdgray}{\cite{vergari21,poon11,peharz16}}
 
 % Slide: PC - Where are we now?
 
@@ -2416,6 +2416,121 @@ in
 \end{center}
 \end{center}
 
+% Slide: SamplePSDD - What do we gain from this?
+
+\newpage
+
+\newtitle{What do we gain from this?}
+\vskip 1cm
+
+\begin{minipage}[t]{0.35\textwidth}
+  \begin{vhcenterb}
+    \parbox{0.9\textwidth}{
+    \large
+    {\Large{}\textbf{Available queries:}}
+    \vskip 0.5cm
+
+    \begin{checks}
+      \item[\done] Probability of Evidence;
+      \item[\done] Marginal Probability;
+      \item[\done] Conditional Probability;
+      \item[\done] Most Probable Explanation;
+      \item[\done] Shannon Entropy;
+      \item[\done] Cross Entropy;
+      \item[\done] Kullback-Leibler Divergence;
+      \item[\done] Rényi's Alpha Divergence;
+      \item[\done] Cauchy-Schwarz Divergence;
+      \item[\done] Probability of Logical Events;
+      \item[\done] Mutual Information.
+    \end{checks}
+
+    \vskip 0.25cm
+    {\Large{}\textbf{Support:}}
+    \vskip 0.5cm
+
+    \begin{checks}
+      \item[\done] Defineable as a logic formula;
+      \item[\wontfix] Consistent with a relaxation;
+      \item[\done] Ensembles mitigate relaxation.
+    \end{checks}
+    }
+  \end{vhcenterb}
+\end{minipage}
+\begin{minipage}[t][0.8\textheight]{0.625\textwidth}
+  \begin{vhcenterb}
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}
+      \node (tab) at (-7,-0.5) {
+        \begin{tabular}{|ccc|c|} \hline
+          $A$ & $B$ & $C$ & $p(\set{x})$\\
+          \hline
+          0 & 0 & 0 & 0.1\\
+          0 & 1 & 0 & 0.1\\
+          1 & 0 & 0 & 0.2\\
+          1 & 0 & 1 & 0.6\\
+          \hline
+        \end{tabular}
+      };
+
+      \node at ($(tab) + (0,-2)$) {\small$\phi(A,B,C)=(A\to\neg B)\wedge(C\to A)$};
+
+      \newVtreeNode{v_root}{$(tab) + (0,-3)$}{1};
+      \newVtreeNode[fill=boxorange!80]{v_lr}{$(v_root)+(-0.55, -1.5)$}{$A$};
+      \newVtreeNode{v_rr}{$(v_root)+(0.55,-1.5)$}{2};
+      \newVtreeNode[fill=boxblue!50]{v_lrr}{$(v_root)+(0,-3.0)$}{$B$};
+      \newVtreeNode[fill=boxgoldenrod!70]{v_rrr}{$(v_root)+(1.1, -3.0)$}{$C$};
+      \draw (v_root) -- (v_lr);
+      \draw (v_root) -- (v_rr);
+      \draw (v_rr) -- (v_lrr);
+      \draw (v_rr) -- (v_rrr);
+
+      \newNamedOrNode[fill=boxgreen,inputs=nn]{r}{0,0}{1};
+      \newAndNode[fill=boxpink!80,inputs=nn]{p1}{$(r) + (-0.75,-1.5)$};
+      \newAndNode[fill=boxred,inputs=nn]{p2}{$(r) + (0.75,-1.5)$};
+      \newNamedOrNode[fill=boxolive,inputs=nn]{s1}{$(p1.input 2) + (0,-1.0)$}{2};
+      \newNamedOrNode[fill=boxmunsel,inputs=nn]{s2}{$(p2.input 2) + (2.2,-1.0)$}{2};
+      \newAndNode[inputs=nn]{s1p1}{$(r) + (-1.5,-4.25)$};
+      \newAndNode[inputs=nn]{s2p1}{$(r) + (2.1,-4.5)$};
+      \newAndNode[inputs=nn]{s2p2}{$(r) + (3.9,-4.5)$};
+      \newOrNode[inputs=nn]{s3}{$(r) + (-0.25,-5.5)$};
+
+      \node[fill=boxorange!80,minimum size=17pt,label=center:{$A$}] (p1l) at ($(p1.input 1) + (-0.75,-1.0)$) {};
+      \node[fill=boxorange!80,minimum size=17pt,label=center:{$\neg A$}] (p2l) at ($(p2.input 1) + (0.0,-1.0)$) {};
+      \node[fill=boxblue!50,minimum size=17pt,label=center:{$\neg B$}] (s1p1l) at ($(s1p1.input 1) + (-0.75,-0.75)$) {};
+      \node[fill=boxblue!50,minimum size=17pt,label=center:{$\neg B$}] (s2p1l1) at ($(s2p1.input 1) + (-0.5,-1.0)$) {};
+      \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s2p1l2) at ($(s2p1.input 2) + (0.5,-1.0)$) {};
+      \node[fill=boxblue!50,minimum size=17pt,label=center:{$B$}] (s2p2l1) at ($(s2p2.input 1) + (-0.5,-1.0)$) {};
+      \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s2p2l2) at ($(s2p2.input 2) + (0.5,-1.0)$) {};
+      \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$C$}] (s3l1) at ($(s3.input 1) + (-0.5,-1.0)$) {};
+      \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s3l2) at ($(s3.input 2) + (0.5,-1.0)$) {};
+
+      \draw[edge] (r.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.8$} (p1.east);
+      \draw[edge] (r.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.2$} (p2.east);
+      \draw[edge] (p1.input 1) -- ++(0,-0.4) -| (p1l.north);
+      \draw[edge] (p2.input 1) -- ++(0,-0.4) -| (p2l.north);
+      \draw[edge] (s1p1.input 1) -- ++(0,-0.2) -| (s1p1l.north);
+      \draw[edge] (s2p1.input 1) -- ++(0,-0.4) -| (s2p1l1.north);
+      \draw[edge] (s2p1.input 2) -- ++(0,-0.4) -| (s2p1l2.north);
+      \draw[edge] (s2p2.input 1) -- ++(0,-0.4) -| (s2p2l1.north);
+      \draw[edge] (s2p2.input 2) -- ++(0,-0.4) -| (s2p2l2.north);
+      \draw[edge] (s3.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.75$} (s3l1.north);
+      \draw[edge] (s3.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.25$} (s3l2.north);
+      \draw[edge] (p1.input 2) -- ++(0,-0.4) -| (s1.east);
+      \draw[edge] (p2.input 2) -- ++(0,-0.4) -| (s2.east);
+      \draw[edge] (s1.west) -- ++(0,-0.3) node[below right]{\color{pdgreen}$1.0$} -| (s1p1.east);
+      \draw[edge] (s2.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.5$} (s2p1.east);
+      \draw[edge] (s2.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.5$} (s2p2.east);
+      \draw[edge] (s1p1.input 2) -- ++ (0,-0.2) -| (s3.east);
+
+      \node at ($(p1l) + (-0.75,0)$) {\color{pviolet}$p_1$};
+      \node at ($(s1) + (0.5,0.5)$) {\color{psandy}$s_1$};
+      \node at ($(p2l) + (0.75,0)$) {\color{pviolet}$p_2$};
+      \node at ($(s2) + (0.5,0.5)$) {\color{psandy}$s_2$};
+    \end{tikzpicture}
+    }
+  \end{vhcenterb}
+\end{minipage}
+
 % Slide: A Data Perspective
 
 \newpage
@@ -2436,23 +2551,31 @@ in
 \begin{minipage}[t][0.8\textheight][t]{0.35\textwidth}
   \vskip 0.5cm
 
-  \resizebox{\textwidth}{!}{
-    \fbox{
-  \begin{minipage}{0.7\textwidth}
-    {\large{}\textbf{Density Estimation Trees...}}
+  \large
+  {\Large{}\textbf{Density Estimation Trees...}}
+  \vskip 0.5cm
 
-    \begin{checks}
-      \item[\done] ...are fast;
-      \item[\done] ...are interpretable;
-      \item[\done] ...are (somewhat) explainable;
-      \item[\done] ...have extensive literature coverage;
-      \item[\wontfix] ...are not so expressive;
-      \item[\wontfix] ...only accept marginalization queries;
-      \item[\wontfix] ...are not so accurate.
-    \end{checks}
-  \end{minipage}
-}
-  }
+  \begin{checks}
+    \item[\done] ...are fast;
+    \item[\done] ...are interpretable;
+    \item[\done] ...are (somewhat) explainable;
+    \item[\done] ...have extensive literature coverage;
+    \item[\wontfix] ...are not so expressive;
+    \item[\wontfix] ...only accept marginalization queries;
+    \item[\wontfix] ...are not so accurate;
+  \end{checks}
+  \vskip 0.15cm
+  \textbf{...but are subsumed by circuits!}
+  \vskip 1.2cm
+  \begin{center}
+    \colorbox{boxorange!70}{Learn DETs $\bm{\subseteq}$ Learn PCs?}
+  \end{center}
+  \vskip 0.7cm
+
+  \begin{center}
+    \colorbox{boxteal}{\parbox{0.85\textwidth}{\color{white}\textbf{Can we take advantage of known
+    learning\\procedures in DETs and transplant them to\\more general circuits?}}}
+  \end{center}
 \end{minipage}
 \begin{minipage}[t][0.9\textheight][t]{0.3\textwidth}
   \begin{vhcenterb}
@@ -2525,6 +2648,9 @@ in
   \end{vhcenterb}
 \end{minipage}
 \end{vhcenterb}
+
+\vskip -2cm
+\color{boxdgray}\cite{correia20}
 
 % Slide: LearnRP - Why? 2
 
