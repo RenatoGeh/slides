@@ -34,7 +34,7 @@
 \usepackage{bm}
 \usepackage{wasysym}
 \usepackage{tikz}
-\usetikzlibrary{shapes,arrows,positioning,fit,circuits.logic.US}
+\usetikzlibrary{shapes,arrows,positioning,fit,circuits.logic.US,shadows,shadings,shapes.symbols,backgrounds}
 \pgfplotsset{compat=1.17}
 
 \bibliographystyle{plainnat}
@@ -228,7 +228,19 @@ size=12pt,thick,fill=orange!50!black!40,#1] (#2) at (#3) {}; \node[circle,draw,i
 \definecolor{Red}{rgb}{0.75,0,0}
 
 \tikzset{
-  edge/.style = {->,>=latex'}
+  edge/.style = {->,>=latex'},
+  double color fill/.code 2 args={
+        \pgfdeclareverticalshading[%
+            tikz@axis@top,tikz@axis@middle,tikz@axis@bottom%
+        ]{diagonalfill}{100bp}{%
+            color(0bp)=(tikz@axis@bottom);
+            color(50bp)=(tikz@axis@bottom);
+            color(50bp)=(tikz@axis@middle);
+            color(50bp)=(tikz@axis@top);
+            color(100bp)=(tikz@axis@top)
+        }
+        \tikzset{shade, left color=#1, right color=#2, shading=diagonalfill}
+    }
 }
 
 % If is final version
@@ -312,6 +324,10 @@ in
     }
   \end{minipage}
   \vspace*{\fill}
+\end{center}
+
+\begin{center}
+  \def\svgwidth{0.1\textwidth}\input{figures/cc.pdf_tex}
 \end{center}
 
 %\newpage
@@ -2541,7 +2557,7 @@ in
   }
 \end{vhcenterb}
 
-% Slide: LearnRP - Why? 1
+% Slide: LearnRP - Motivation 1
 
 \newpage
 
@@ -2650,16 +2666,314 @@ in
 \end{vhcenterb}
 
 \vskip -2cm
-\color{boxdgray}\cite{correia20}
+{\color{boxdgray}\cite{correia20}}
 
-% Slide: LearnRP - Why? 2
+% Slide: LeanrRP - Random Projections
 
-%\newpage
+\newpage
 
-%\newtitle{\textproc{LearnRP} -- Why?}
+\newtitle{Random Projections}
 
+\begin{vhcenterb}
+  \def\points{(2.3,4.38),(1.8,4.0),(2.8,4.0),(1.6,3.3),(2.5,3),(3.1,2.8),(3.8,3.1),(4.3,3.3),(4,2.6),(4.5,2.4),(3.3,2.3),(2.1,2.0),(3.1,1.8),(2.4,1.6),(2.9,1.5),(2.5,1.3),(3.1,1.1),(3.1,0.6),(2.7,0.8),(1.5,0.8),(1.7,1.3),(1.2,1.5),(3.6,0.5),(4,0.3),(4.1,0.6),(3.8,0.8),(4.4,0.8),(4,1.1),(4.3,1.1),(4.6,1),(3.6,1.2),(3.9,1.4),(4.2,1.4),(4.6,1.4),(4.4,1.7),(3.8,1.7)}
 
-%\newpage
+  \begin{minipage}[t]{0.25\textwidth}
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}
+      \foreach \p in \points {
+        \node[circle,inner sep=0pt,minimum size=2pt,fill=boxgray] at \p {};
+      }
+      \draw[very thick,boxblue,dashed] (3.5,0) -- node[left,pos=0.9] {\color{boxblue}$\set{A}$} (3.5,5);
+      \draw[very thick,boxgreen,dashed] (0,2.5) -- node[right,pos=1] {\color{boxgreen}$\set{B}$} (3.5,2.5);
+      \draw[very thick,boxpurple!80,dashed] (2,0) -- node[above,pos=1] {\color{boxpurple}$\set{C}$} (2,2.5);
+      \draw[very thick,boxmunsel,dashed] (0,3.75) -- node[right,pos=1] {\color{boxmunsel}$\set{D}$} (3.5,3.75);
+      \draw[very thick,boxolive!80!black,dashed] (3.5,2) -- node[below,pos=0.5] {\color{boxolive!80!black}$\set{E}$} (5,2);
+      \draw[very thick] (0,0) rectangle (5, 5);
+      \node at (2.5, -0.5) {\emph{Axis-aligned projections}};
+    \end{tikzpicture}
+    }
+  \end{minipage}
+  \hspace{3cm}
+  \begin{minipage}[t]{0.25\textwidth}
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}
+      \foreach \p in \points {
+        \node[circle,inner sep=0pt,minimum size=2pt,fill=boxgray] at \p {};
+      }
+      \draw[very thick,boxblue,dashed] (2.2,0) coordinate (a1) -- node[left,pos=0.9] {\color{boxblue}$\set{A}$} (5,3.1) coordinate (a2);
+      \draw[very thick,boxgreen,dashed] ($(a1)!0.5!(a2)$) coordinate (b1) -- node[above right,pos=0.9] {\color{boxgreen}$\set{B}$} (0,4.2) coordinate (b2);
+      \draw[very thick,boxpurple!80,dashed] ($(b1)!0.35!(b2)$) coordinate (c1) -- node[above left,pos=0.7] {\color{boxpurple}$\set{C}$} (5,5) coordinate (c2);
+      \draw[very thick,boxmunsel,dashed] ($(b1)!0.22!(b2)$) coordinate (d1) -- node[above left,pos=0.9] {\color{boxmunsel}$\set{D}$} (1.8,0) coordinate (d2);
+      \draw[very thick,boxolive!80!black,dashed] ($(a1)!0.45!(a2)$) -- node[right,pos=0.6] {\color{boxolive!80!black}$\set{E}$} (5,0);
+      \draw[very thick] (0,0) rectangle (5, 5);
+      \node at (2.5, -0.5) {\emph{Random projections}};
+    \end{tikzpicture}
+    }
+  \end{minipage}
+
+  \vskip 1.5cm
+  \Large
+  \begin{minipage}{0.75\textwidth}
+    \begin{quote}
+      If the data has \emph{intrinsic dimension} $d$, then with constant probability the part of
+      the data at level $d$ or higher of the tree has average diameter less than half of the data.
+    \end{quote}
+  \end{minipage}
+\end{vhcenterb}
+
+{\color{boxdgray}\cite{dasgupta08a,dasgupta08b}}
+
+% Slide: LeanrRP - Random Projections
+
+\newpage
+
+\newtitle{Random Projections}
+
+\begin{vhcenterb}
+  \def\points{(2.3,4.38),(1.8,4.0),(2.8,4.0),(1.6,3.3),(2.5,3),(3.1,2.8),(3.8,3.1),(4.3,3.3),(4,2.6),(4.5,2.4),(3.3,2.3),(2.1,2.0),(3.1,1.8),(2.4,1.6),(2.9,1.5),(2.5,1.3),(3.1,1.1),(3.1,0.6),(2.7,0.8),(1.5,0.8),(1.7,1.3),(1.2,1.5),(3.6,0.5),(4,0.3),(4.1,0.6),(3.8,0.8),(4.4,0.8),(4,1.1),(4.3,1.1),(4.6,1),(3.6,1.2),(3.9,1.4),(4.2,1.4),(4.6,1.4),(4.4,1.7),(3.8,1.7)}
+
+  \begin{minipage}[t]{0.25\textwidth}
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}
+      \begin{axis}[
+        title={\textproc{SplitMax}},
+        tick style={draw=none},
+        ytick=\empty,
+        xtick=\empty,
+        enlargelimits=0,
+        ymin=-1.8,
+        ymax=1.8,
+        xmin=-1.8,
+        xmax=1.8,
+      ]
+        \addplot[only marks, olive, opacity=0.5] table {data/max_1_full_parts.data};
+        \addplot[only marks, teal, opacity=0.5] table {data/max_2_full_parts.data};
+        \addplot[only marks, magenta, opacity=0.5] table {data/max_3_full_parts.data};
+        \addplot[only marks, violet, opacity=0.5] table {data/max_4_full_parts.data};
+        \addplot[black, thick] coordinates {
+          (-0.7435410726460153, 0.2259926265097693)
+          (2, -1.906932050205991)
+        };
+        \addplot[black, thick] coordinates {
+          (-0.5739178598189635, 0.33907476839447037)
+          (-2, 2.4781979786660253)
+        };
+        \addplot[black,thick] coordinates {
+          (-2, -0.6116466583928871)
+          (2, 2.0550200082737793)
+        };
+      \end{axis}
+    \end{tikzpicture}
+    }
+  \end{minipage}
+  \hspace{3cm}
+  \begin{minipage}[t]{0.25\textwidth}
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}
+      \begin{axis}[
+        title={\textsc{SplitSID}},
+        tick style={draw=none},
+        ytick=\empty,
+        xtick=\empty,
+        enlargelimits=0,
+        ymin=-1.8,
+        ymax=1.8,
+        xmin=-1.8,
+        xmax=1.8
+      ]
+        \addplot[only marks, olive, opacity=0.5] table {data/sid_1_full_parts.data};
+        \addplot[only marks, teal, opacity=0.5] table {data/sid_2_full_parts.data};
+        \addplot[only marks, magenta, opacity=0.5] table {data/sid_3_full_parts.data};
+        \addplot[only marks, violet, opacity=0.5] table {data/sid_4_full_parts.data};
+        \addplot[black, thick] coordinates {
+        (-2, -1.3212366499672479)
+        (2, 1.3454300166994186)
+        };
+        \addplot[black, thick] coordinates {
+        (-2, 2.346171790525994)
+        (-0.3073499505415808, -0.19280328366163507)
+        };
+        \addplot[black,thick] coordinates {
+        (-0.023469760285374355, -0.003549823490830769)
+        (2, -1.576665905962419)
+        };
+      \end{axis}
+    \end{tikzpicture}
+    }
+  \end{minipage}
+
+  \vskip 3cm
+  \Large
+  \begin{minipage}{0.75\textwidth}
+    \begin{quote}
+      If the data has \emph{intrinsic dimension} $d$, then with constant probability the part of
+      the data at level $d$ or higher of the tree has average diameter less than half of the data.
+    \end{quote}
+  \end{minipage}
+\end{vhcenterb}
+
+{\color{boxdgray}\cite{dasgupta08a,dasgupta08b}}
+
+% Slide: LearnRP 1
+
+\newpage
+
+\newtitle{LearnRP}
+\vskip 1cm
+
+\begin{center}
+  \def\points{(2.3,4.38),(1.8,4.0),(2.8,4.0),(1.6,3.3),(2.5,3),(3.1,2.8),(3.8,3.1),(4.3,3.3),(4,2.6),(4.5,2.4),(3.3,2.3),(2.1,2.0),(3.1,1.8),(2.4,1.6),(2.9,1.5),(2.5,1.3),(3.1,1.1),(3.1,0.6),(2.7,0.8),(1.5,0.8),(1.7,1.3),(1.2,1.5),(3.6,0.5),(4,0.3),(4.1,0.6),(3.8,0.8),(4.4,0.8),(4,1.1),(4.3,1.1),(4.6,1),(3.6,1.2),(3.9,1.4),(4.2,1.4),(4.6,1.4),(4.4,1.7),(3.8,1.7)}
+  \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
+    \vfill
+    \begin{vhcenterb}
+      \resizebox{0.55\textwidth}{!}{
+      \begin{tikzpicture}
+        \foreach \p in \points {
+          \node[circle,inner sep=0pt,minimum size=2pt,fill=black] at \p {};
+        }
+        \draw[very thick] (0,0) rectangle (5, 5);
+      \end{tikzpicture}
+      }
+    \end{vhcenterb}
+  \end{minipage}
+  \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
+    \begin{vhcenterb}
+      \resizebox{0.35\textwidth}{!}{
+      \begin{tikzpicture}
+        \newVtreeNode[double color fill={boxblue}{boxred},shading angle=45]{v}{0,0}{1};
+        \newVtreeNode{l}{$(v) + (-1.0,-1)$}{2};
+        \newVtreeNode{r}{$(v) + (1.0,-1)$}{3};
+        \draw (v) -- (l); \draw (v) -- (r);
+        \draw (l) -- node[pos=1,below] {$\vdots$} ($(l) + (-0.5,-1)$);
+        \draw (l) -- node[pos=1,below] {$\vdots$} ($(l) + (0.5,-1)$);
+        \draw (r) -- node[pos=1,below] {$\vdots$} ($(r) + (-0.5,-1)$);
+        \draw (r) -- node[pos=1,below] {$\vdots$} ($(r) + (0.5,-1)$);
+      \end{tikzpicture}
+      }
+      \vskip 3cm
+      \resizebox{0.1\textwidth}{!}{
+      \begin{tikzpicture}
+        \newSumNode[fill=boxgreen]{r}{0,0};
+      \end{tikzpicture}
+      }
+    \end{vhcenterb}
+  \end{minipage}
+\end{center}
+
+% Slide: LearnRP 2
+
+\newpage
+
+\newtitle{LearnRP}
+\vskip 1cm
+
+\begin{center}
+  \def\points{(2.3,4.38),(1.8,4.0),(2.8,4.0),(1.6,3.3),(2.5,3),(3.1,2.8),(3.8,3.1),(4.3,3.3),(4,2.6),(4.5,2.4),(3.3,2.3),(2.1,2.0),(3.1,1.8),(2.4,1.6),(2.9,1.5),(2.5,1.3),(3.1,1.1),(3.1,0.6),(2.7,0.8),(1.5,0.8),(1.7,1.3),(1.2,1.5),(3.6,0.5),(4,0.3),(4.1,0.6),(3.8,0.8),(4.4,0.8),(4,1.1),(4.3,1.1),(4.6,1),(3.6,1.2),(3.9,1.4),(4.2,1.4),(4.6,1.4),(4.4,1.7),(3.8,1.7)}
+  \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
+    \vfill
+    \begin{vhcenterb}
+      \resizebox{0.55\textwidth}{!}{
+      \begin{tikzpicture}
+        \fill[boxblue!50] (0,0) -- (2.2,0) -- (5,3.1) -- (5,5) -- (0,5) -- cycle;
+        \fill[boxred!50] (2.2,0) -- (5,3.1) -- (5,0) -- cycle;
+        \foreach \p in \points {
+          \node[circle,inner sep=0pt,minimum size=2pt,fill=boxdgray] at \p {};
+        }
+        \draw[very thick,boxgreen,dashed] (2.2,0) coordinate (a1) -- node[left,pos=0.9] {\color{boxgreen}$\set{A}$} (5,3.1) coordinate (a2);
+        \draw[very thick] (0,0) rectangle (5, 5);
+      \end{tikzpicture}
+      }
+    \end{vhcenterb}
+  \end{minipage}
+  \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
+    \begin{vhcenterb}
+      \resizebox{0.35\textwidth}{!}{
+      \begin{tikzpicture}
+        \newVtreeNode[double color fill={boxblue}{boxred},shading angle=45]{v}{0,0}{1};
+        \newVtreeNode{l}{$(v) + (-1.0,-1)$}{2};
+        \newVtreeNode{r}{$(v) + (1.0,-1)$}{3};
+        \draw (v) -- (l); \draw (v) -- (r);
+        \draw (l) -- node[pos=1,below] {$\vdots$} ($(l) + (-0.5,-1)$);
+        \draw (l) -- node[pos=1,below] {$\vdots$} ($(l) + (0.5,-1)$);
+        \draw (r) -- node[pos=1,below] {$\vdots$} ($(r) + (-0.5,-1)$);
+        \draw (r) -- node[pos=1,below] {$\vdots$} ($(r) + (0.5,-1)$);
+      \end{tikzpicture}
+      }
+      \vskip 2cm
+      \resizebox{0.45\textwidth}{!}{
+      \begin{tikzpicture}
+        \newSumNode[fill=boxgreen,label=above left:{\color{boxgreen}$\set{A}$}]{r}{0,0};
+        \newProdNode[fill=boxblue]{p1}{$(r) + (-1,-1)$};
+        \newProdNode[fill=boxred]{p2}{$(r) + (1,-1)$};
+        \draw[edge] (r) -- (p1);
+        \draw[edge] (r) -- (p2);
+      \end{tikzpicture}
+      }
+    \end{vhcenterb}
+  \end{minipage}
+\end{center}
+
+% Slide: LearnRP 3
+
+\newpage
+
+\newtitle{LearnRP}
+\vskip 1cm
+
+\begin{center}
+  \def\points{(2.3,4.38),(1.8,4.0),(2.8,4.0),(1.6,3.3),(2.5,3),(3.1,2.8),(3.8,3.1),(4.3,3.3),(4,2.6),(4.5,2.4),(3.3,2.3),(2.1,2.0),(3.1,1.8),(2.4,1.6),(2.9,1.5),(2.5,1.3),(3.1,1.1),(3.1,0.6),(2.7,0.8),(1.5,0.8),(1.7,1.3),(1.2,1.5),(3.6,0.5),(4,0.3),(4.1,0.6),(3.8,0.8),(4.4,0.8),(4,1.1),(4.3,1.1),(4.6,1),(3.6,1.2),(3.9,1.4),(4.2,1.4),(4.6,1.4),(4.4,1.7),(3.8,1.7)}
+  \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
+    \vfill
+    \begin{vhcenterb}
+      \resizebox{0.55\textwidth}{!}{
+      \begin{tikzpicture}
+        \foreach \p in \points {
+          \node[circle,inner sep=0pt,minimum size=2pt,fill=boxdgray] at \p {};
+        }
+        \draw[very thick,boxgreen,dashed] (2.2,0) coordinate (a1) -- node[left,pos=0.9] {\color{boxgreen}$\set{A}$} (5,3.1) coordinate (a2);
+        \draw[very thick,boxpink,dashed] ($(a1)!0.5!(a2)$) coordinate (b1) -- node[above right,pos=0.9] {\color{boxpink}$\set{B}$} (0,4.2) coordinate (b2);
+        \draw[very thick] (0,0) rectangle (5, 5);
+        \begin{scope}[on background layer]
+          \fill[boxblue!50] (0,0) -- (a1) -- (b1) -- (b2) -- (0,5) -- cycle;
+          \fill[boxred!50] (0,5) -- (b2) -- (b1) -- (a2) -- (5,5) -- cycle;
+        \end{scope}
+      \end{tikzpicture}
+      }
+    \end{vhcenterb}
+  \end{minipage}
+  \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
+    \begin{vhcenterb}
+      \resizebox{0.35\textwidth}{!}{
+      \begin{tikzpicture}
+        \newVtreeNode[double color fill={boxblue}{boxred},shading angle=45]{v}{0,0}{1};
+        \newVtreeNode{l}{$(v) + (-1.0,-1)$}{2};
+        \newVtreeNode{r}{$(v) + (1.0,-1)$}{3};
+        \draw (v) -- (l); \draw (v) -- (r);
+        \draw (l) -- node[pos=1,below] {$\vdots$} ($(l) + (-0.5,-1)$);
+        \draw (l) -- node[pos=1,below] {$\vdots$} ($(l) + (0.5,-1)$);
+        \draw (r) -- node[pos=1,below] {$\vdots$} ($(r) + (-0.5,-1)$);
+        \draw (r) -- node[pos=1,below] {$\vdots$} ($(r) + (0.5,-1)$);
+      \end{tikzpicture}
+      }
+      \vskip 2cm
+      \resizebox{0.45\textwidth}{!}{
+      \begin{tikzpicture}
+        \newSumNode[fill=boxgreen,label=above left:{\color{boxgreen}$\set{A}$}]{r}{0,0};
+        \newProdNode[fill=boxorange]{p1}{$(r) + (-1,-1)$};
+        \newProdNode[fill=boxorange]{p2}{$(r) + (1,-1)$};
+        \newSumNode[fill=boxpink,label=above left:{\color{boxpink}$\set{A}$}]{r}{$(p1) + (-0.5,-1)$};
+        \newSumNode[fill=boxpink,label=above left:{\color{boxpink}$\set{A}$}]{r}{$(p1) + (0.5,-1)$};
+        \draw[edge] (r) -- (p1);
+        \draw[edge] (r) -- (p2);
+      \end{tikzpicture}
+      }
+    \end{vhcenterb}
+  \end{minipage}
+\end{center}
 
 \nobibliography{refs.bib}
 
