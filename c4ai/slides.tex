@@ -2826,32 +2826,35 @@ in
 \vskip 1cm
 
 \begin{center}
-  \def\points{(2.3,4.38),(1.8,4.0),(2.8,4.0),(1.6,3.3),(2.5,3),(3.1,2.8),(3.8,3.1),(4.3,3.3),(4,2.6),(4.5,2.4),(3.3,2.3),(2.1,2.0),(3.1,1.8),(2.4,1.6),(2.9,1.5),(2.5,1.3),(3.1,1.1),(3.1,0.6),(2.7,0.8),(1.5,0.8),(1.7,1.3),(1.2,1.5),(3.6,0.5),(4,0.3),(4.1,0.6),(3.8,0.8),(4.4,0.8),(4,1.1),(4.3,1.1),(4.6,1),(3.6,1.2),(3.9,1.4),(4.2,1.4),(4.6,1.4),(4.4,1.7),(3.8,1.7)}
   \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
     \vfill
     \begin{vhcenterb}
-      \resizebox{0.55\textwidth}{!}{
+      \resizebox{0.7\textwidth}{!}{
       \begin{tikzpicture}
-        \foreach \p in \points {
-          \node[circle,inner sep=0pt,minimum size=2pt,fill=black] at \p {};
-        }
-        \draw[very thick] (0,0) rectangle (5, 5);
+        \begin{axis}[
+          xmin=0,xmax=5,ymin=0,ymax=5,zmin=0,zmax=5,
+          xlabel=$X$,ylabel=$Y$,zlabel=$Z$,zlabel style={rotate=-90},
+          xtick={0,1,...,5},ytick={1,...,5},ztick={1,...,5},
+          grid=major,
+        ]
+          \addplot3+[only marks,mark options={boxdgray,fill=boxdgray}] table{data/cloud.dat};
+        \end{axis}
       \end{tikzpicture}
       }
     \end{vhcenterb}
   \end{minipage}
   \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
     \begin{vhcenterb}
-      \resizebox{0.35\textwidth}{!}{
+      \resizebox{0.3\textwidth}{!}{
       \begin{tikzpicture}
-        \newVtreeNode[double color fill={boxblue}{boxred},shading angle=45]{v}{0,0}{1};
-        \newVtreeNode{l}{$(v) + (-1.0,-1)$}{2};
-        \newVtreeNode{r}{$(v) + (1.0,-1)$}{3};
-        \draw (v) -- (l); \draw (v) -- (r);
-        \draw (l) -- node[pos=1,below] {$\vdots$} ($(l) + (-0.5,-1)$);
-        \draw (l) -- node[pos=1,below] {$\vdots$} ($(l) + (0.5,-1)$);
-        \draw (r) -- node[pos=1,below] {$\vdots$} ($(r) + (-0.5,-1)$);
-        \draw (r) -- node[pos=1,below] {$\vdots$} ($(r) + (0.5,-1)$);
+        \newVtreeNode{v}{0,0}{1};
+        \newVtreeNode{z}{$(v) + (-0.5,-1)$}{$Z$};
+        \newVtreeNode{r}{$(v) + (0.5,-1)$}{2};
+        \newVtreeNode{y}{$(r) + (-0.5,-1)$}{$Y$};
+        \newVtreeNode{x}{$(r) + (0.5,-1)$}{$X$};
+        \draw (v) -- (z); \draw (v) -- (r);
+        \draw (r) -- (y);
+        \draw (r) -- (x);
       \end{tikzpicture}
       }
       \vskip 3cm
@@ -2876,41 +2879,59 @@ in
   \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
     \vfill
     \begin{vhcenterb}
-      \resizebox{0.55\textwidth}{!}{
+      \def\prx{-0.31}
+      \def\pry{-0.4}
+      \def\prz{0.85}
+      \def\prtheta{-1}
+      \resizebox{0.7\textwidth}{!}{
       \begin{tikzpicture}
-        \fill[boxblue!50] (0,0) -- (2.2,0) -- (5,3.1) -- (5,5) -- (0,5) -- cycle;
-        \fill[boxred!50] (2.2,0) -- (5,3.1) -- (5,0) -- cycle;
-        \foreach \p in \points {
-          \node[circle,inner sep=0pt,minimum size=2pt,fill=boxdgray] at \p {};
-        }
-        \draw[very thick,boxgreen,dashed] (2.2,0) coordinate (a1) -- node[left,pos=0.9] {\color{boxgreen}$\set{A}$} (5,3.1) coordinate (a2);
-        \draw[very thick] (0,0) rectangle (5, 5);
+        \begin{axis}[
+          xmin=0,xmax=5,ymin=0,ymax=5,zmin=0,zmax=5,
+          xlabel=$X$,ylabel=$Y$,zlabel=$Z$,zlabel style={rotate=-90},
+          xtick={0,1,...,5},ytick={1,...,5},ztick={1,...,5},
+          grid=major,
+        ]
+
+          \addplot3+[only marks,mark options={boxblue,fill=boxblue}] table {data/cloud_pos.dat};
+          \addplot3+[only marks,mark options={boxred,fill=boxred}] table {data/cloud_neg.dat};
+          \addplot3[colormap={bgreen}{color=(boxgreen),color=(boxgreen)},surf,color=boxgreen,
+            point meta=1,z buffer=sort,shader=interp,opacity=0.6]
+            {-(\prx*x+\pry*y+\prtheta)/\prz};
+          \node at (5,3.5,3) {\color{boxgreen}$\set{A}$};
+        \end{axis}
       \end{tikzpicture}
       }
+      \vskip 0.5cm
+      \LARGE
+      \begin{equation*}
+        \textcolor{boxgreen}{\set{A}}(x,y,z)=\begin{bmatrix} x & y &
+          z\\\end{bmatrix}\cdot\scalebox{0.75}{$\begin{bmatrix*}[r]
+          -0.31\\ -0.40\\ 0.85 \end{bmatrix*}$}+1
+      \end{equation*}
     \end{vhcenterb}
   \end{minipage}
   \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
     \begin{vhcenterb}
-      \resizebox{0.35\textwidth}{!}{
+      \resizebox{0.3\textwidth}{!}{
       \begin{tikzpicture}
         \newVtreeNode[double color fill={boxblue}{boxred},shading angle=45]{v}{0,0}{1};
-        \newVtreeNode{l}{$(v) + (-1.0,-1)$}{2};
-        \newVtreeNode{r}{$(v) + (1.0,-1)$}{3};
-        \draw (v) -- (l); \draw (v) -- (r);
-        \draw (l) -- node[pos=1,below] {$\vdots$} ($(l) + (-0.5,-1)$);
-        \draw (l) -- node[pos=1,below] {$\vdots$} ($(l) + (0.5,-1)$);
-        \draw (r) -- node[pos=1,below] {$\vdots$} ($(r) + (-0.5,-1)$);
-        \draw (r) -- node[pos=1,below] {$\vdots$} ($(r) + (0.5,-1)$);
+        \newVtreeNode{z}{$(v) + (-0.5,-1)$}{$Z$};
+        \newVtreeNode{r}{$(v) + (0.5,-1)$}{2};
+        \newVtreeNode{y}{$(r) + (-0.5,-1)$}{$Y$};
+        \newVtreeNode{x}{$(r) + (0.5,-1)$}{$X$};
+        \draw (v) -- (z); \draw (v) -- (r);
+        \draw (r) -- (y);
+        \draw (r) -- (x);
       \end{tikzpicture}
       }
       \vskip 2cm
-      \resizebox{0.45\textwidth}{!}{
+      \resizebox{0.5\textwidth}{!}{
       \begin{tikzpicture}
         \newSumNode[fill=boxgreen,label=above left:{\color{boxgreen}$\set{A}$}]{r}{0,0};
-        \newProdNode[fill=boxblue]{p1}{$(r) + (-1,-1)$};
-        \newProdNode[fill=boxred]{p2}{$(r) + (1,-1)$};
-        \draw[edge] (r) -- (p1);
-        \draw[edge] (r) -- (p2);
+        \newProdNode[label=below:{$\textcolor{boxgreen}{\set{A}}(\set{x})>0$},fill=boxblue]{p1}{$(r) + (-1,-1)$};
+        \newProdNode[label=below:{$\textcolor{boxgreen}{\set{A}}(\set{x})\leq 0$},fill=boxred]{p2}{$(r) + (1,-1)$};
+        \draw[edge] (r) -- node[pos=0.5,above left] {$\frac{16}{36}$} (p1);
+        \draw[edge] (r) -- node[pos=0.5,above right] {$\frac{20}{36}$} (p2);
       \end{tikzpicture}
       }
     \end{vhcenterb}
@@ -2925,21 +2946,48 @@ in
 \vskip 1cm
 
 \begin{center}
-  \def\points{(2.3,4.38),(1.8,4.0),(2.8,4.0),(1.6,3.3),(2.5,3),(3.1,2.8),(3.8,3.1),(4.3,3.3),(4,2.6),(4.5,2.4),(3.3,2.3),(2.1,2.0),(3.1,1.8),(2.4,1.6),(2.9,1.5),(2.5,1.3),(3.1,1.1),(3.1,0.6),(2.7,0.8),(1.5,0.8),(1.7,1.3),(1.2,1.5),(3.6,0.5),(4,0.3),(4.1,0.6),(3.8,0.8),(4.4,0.8),(4,1.1),(4.3,1.1),(4.6,1),(3.6,1.2),(3.9,1.4),(4.2,1.4),(4.6,1.4),(4.4,1.7),(3.8,1.7)}
+  \input{data/cloud_pos_xy.tex}
   \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
     \vfill
     \begin{vhcenterb}
-      \resizebox{0.55\textwidth}{!}{
+      \def\prx{-0.31}
+      \def\pry{-0.4}
+      \def\prz{0.85}
+      \def\prtheta{-1}
+      \resizebox{0.6\textwidth}{!}{
+      \begin{tikzpicture}
+        \begin{axis}[
+          xmin=0,xmax=5,ymin=0,ymax=5,zmin=0,zmax=5,
+          xlabel=$X$,ylabel=$Y$,zlabel=$Z$,zlabel style={rotate=-90},
+          xtick={0,1,...,5},ytick={1,...,5},ztick={1,...,5},
+          grid=major,
+        ]
+          \addplot3+[only marks,ycomb,color=boxblue,mark options={boxblue,fill=boxblue}] table {data/cloud_pos.dat};
+          \addplot3+[only marks,mark options={boxred,fill=boxred},opacity=0.5] table {data/cloud_neg.dat};
+          \addplot3+[only marks,mark options={boxdgray,fill=boxdgray},mark size=1] table[z expr=0] {data/cloud_pos.dat};
+          \addplot3[colormap={bgreen}{color=(boxgreen),color=(boxgreen)},surf,color=boxgreen,
+            point meta=1,z buffer=sort,shader=interp,opacity=0.6]
+            {-(\prx*x+\pry*y+\prtheta)/\prz};
+          \node at (5,3.5,3) {\color{boxgreen}$\set{A}$};
+          \draw[very thick,boxpink,dashed] (2.2,0,0) coordinate (b1) -- node[above left,pos=0.9] {\color{boxpink}$\set{B}$} (5,3.1,0) coordinate (b2);
+          \begin{scope}[on background layer]
+            \fill[boxblue!50] (0,0,0) -- (b1) -- (b2) -- (5,5,0) -- (0,5,0) -- cycle;
+            \fill[boxred!50] (b1) -- (5,0,0) -- (b2) -- cycle;
+          \end{scope}
+        \end{axis}
+      \end{tikzpicture}
+      }
+      \vskip 0.5cm
+      \resizebox{0.4\textwidth}{!}{
       \begin{tikzpicture}
         \foreach \p in \points {
           \node[circle,inner sep=0pt,minimum size=2pt,fill=boxdgray] at \p {};
         }
-        \draw[very thick,boxgreen,dashed] (2.2,0) coordinate (a1) -- node[left,pos=0.9] {\color{boxgreen}$\set{A}$} (5,3.1) coordinate (a2);
-        \draw[very thick,boxpink,dashed] ($(a1)!0.5!(a2)$) coordinate (b1) -- node[above right,pos=0.9] {\color{boxpink}$\set{B}$} (0,4.2) coordinate (b2);
+        \draw[very thick,boxpink,dashed] (2.2,0) coordinate (b1) -- node[left,pos=0.9] {\color{boxpink}$\set{B}$} (5,3.1) coordinate (b2);
         \draw[very thick] (0,0) rectangle (5, 5);
         \begin{scope}[on background layer]
-          \fill[boxblue!50] (0,0) -- (a1) -- (b1) -- (b2) -- (0,5) -- cycle;
-          \fill[boxred!50] (0,5) -- (b2) -- (b1) -- (a2) -- (5,5) -- cycle;
+          \fill[boxblue!50] (0,0) -- (b1) -- (b2) -- (5,5) -- (0,5) -- cycle;
+          \fill[boxred!50] (b1) -- (5,0) -- (b2) -- cycle;
         \end{scope}
       \end{tikzpicture}
       }
@@ -2947,16 +2995,16 @@ in
   \end{minipage}
   \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
     \begin{vhcenterb}
-      \resizebox{0.35\textwidth}{!}{
+      \resizebox{0.3\textwidth}{!}{
       \begin{tikzpicture}
-        \newVtreeNode[double color fill={boxblue}{boxred},shading angle=45]{v}{0,0}{1};
-        \newVtreeNode{l}{$(v) + (-1.0,-1)$}{2};
-        \newVtreeNode{r}{$(v) + (1.0,-1)$}{3};
-        \draw (v) -- (l); \draw (v) -- (r);
-        \draw (l) -- node[pos=1,below] {$\vdots$} ($(l) + (-0.5,-1)$);
-        \draw (l) -- node[pos=1,below] {$\vdots$} ($(l) + (0.5,-1)$);
-        \draw (r) -- node[pos=1,below] {$\vdots$} ($(r) + (-0.5,-1)$);
-        \draw (r) -- node[pos=1,below] {$\vdots$} ($(r) + (0.5,-1)$);
+        \newVtreeNode[fill=boxgreen]{v}{0,0}{1};
+        \newVtreeNode{z}{$(v) + (-0.5,-1)$}{$Z$};
+        \newVtreeNode[double color fill={boxblue}{boxred},shading angle=45]{r}{$(v) + (0.5,-1)$}{2};
+        \newVtreeNode{y}{$(r) + (-0.5,-1)$}{$Y$};
+        \newVtreeNode{x}{$(r) + (0.5,-1)$}{$X$};
+        \draw (v) -- (z); \draw (v) -- (r);
+        \draw (r) -- (y);
+        \draw (r) -- (x);
       \end{tikzpicture}
       }
       \vskip 2cm
@@ -2965,10 +3013,13 @@ in
         \newSumNode[fill=boxgreen,label=above left:{\color{boxgreen}$\set{A}$}]{r}{0,0};
         \newProdNode[fill=boxorange]{p1}{$(r) + (-1,-1)$};
         \newProdNode[fill=boxorange]{p2}{$(r) + (1,-1)$};
-        \newSumNode[fill=boxpink,label=above left:{\color{boxpink}$\set{A}$}]{r}{$(p1) + (-0.5,-1)$};
-        \newSumNode[fill=boxpink,label=above left:{\color{boxpink}$\set{A}$}]{r}{$(p1) + (0.5,-1)$};
+        %\newSumNode[fill=boxpink]{b1}{$(
+        \newProdNode[fill=boxblue,label=below:{$\textcolor{boxpink}{\set{B}}(\set{x})>0$}]{q1}{$(p1) + (-1,-1)$};
+        \newProdNode[fill=boxred,label=below:{$\textcolor{boxpink}{\set{B}}(\set{x})\leq 0$}]{q2}{$(p1) + (1,-1)$};
         \draw[edge] (r) -- (p1);
         \draw[edge] (r) -- (p2);
+        \draw[edge] (p1) -- (b1);
+        \draw[edge] (p1) -- (b2);
       \end{tikzpicture}
       }
     \end{vhcenterb}
