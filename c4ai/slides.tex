@@ -514,8 +514,6 @@ in
         xticklabels={\colorbox{boxblue}{$\mathbf{0.8}$}},
         yticklabels={\colorbox{boxgreen}{$\mathbf{0.29}$}},
         axis lines*=left, xlabel=$x$, ylabel=$p(x)$,
-        every axis y label/.style={font=\scriptsize,at={(axis description cs:-0.1,0.9)},anchor=south},
-        every axis x label/.style={font=\scriptsize,at=(current axis.right of origin),anchor=west},
         enlargelimits=false, clip=false, axis on top,
         grid = major
       ]
@@ -2666,7 +2664,7 @@ in
 \end{vhcenterb}
 
 \vskip -2cm
-{\color{boxdgray}\cite{correia20}}
+{\color{boxdgray}\cite{correia20,ram11}}
 
 % Slide: LeanrRP - Random Projections
 
@@ -2930,10 +2928,15 @@ in
         \newSumNode[fill=boxgreen,label=above left:{\color{boxgreen}$\set{A}$}]{r}{0,0};
         \newProdNode[label=below:{$\textcolor{boxgreen}{\set{A}}(\set{x})>0$},fill=boxblue]{p1}{$(r) + (-1,-1)$};
         \newProdNode[label=below:{$\textcolor{boxgreen}{\set{A}}(\set{x})\leq 0$},fill=boxred]{p2}{$(r) + (1,-1)$};
-        \draw[edge] (r) -- node[pos=0.5,above left] {$\frac{16}{36}$} (p1);
-        \draw[edge] (r) -- node[pos=0.5,above right] {$\frac{20}{36}$} (p2);
+        \draw[edge] (r) -- node[pos=0.5,above left] {$w_{\textcolor{boxgreen}{\set{A}}}=\frac{16}{36}$} (p1);
+        \draw[edge] (r) -- node[pos=0.5,above right] {$w_{\textcolor{boxgreen}{\overline{\set{A}}}}=\frac{20}{36}$} (p2);
       \end{tikzpicture}
       }
+      \vskip 0.25cm
+      \Large
+      \begin{equation*}
+        w_{\textcolor{boxgreen}{\set{A}}}\text{:\, probability of }\textcolor{boxgreen}{\set{A}}(\set{x})>0
+      \end{equation*}
     \end{vhcenterb}
   \end{minipage}
 \end{center}
@@ -2943,7 +2946,6 @@ in
 \newpage
 
 \newtitle{LearnRP}
-\vskip 1cm
 
 \begin{center}
   \input{data/cloud_pos_xy.tex}
@@ -2965,6 +2967,7 @@ in
           \addplot3+[only marks,ycomb,color=boxblue,mark options={boxblue,fill=boxblue}] table {data/cloud_pos.dat};
           \addplot3+[only marks,mark options={boxred,fill=boxred},opacity=0.5] table {data/cloud_neg.dat};
           \addplot3+[only marks,mark options={boxdgray,fill=boxdgray},mark size=1] table[z expr=0] {data/cloud_pos.dat};
+          \addplot3+[only marks,mark options={boxorange,fill=boxorange},mark size=2,mark=triangle*] table[x expr=0] {data/cloud_pos.dat};
           \addplot3[colormap={bgreen}{color=(boxgreen),color=(boxgreen)},surf,color=boxgreen,
             point meta=1,z buffer=sort,shader=interp,opacity=0.6]
             {-(\prx*x+\pry*y+\prtheta)/\prz};
@@ -2977,28 +2980,52 @@ in
         \end{axis}
       \end{tikzpicture}
       }
-      \vskip 0.5cm
-      \resizebox{0.4\textwidth}{!}{
-      \begin{tikzpicture}
-        \foreach \p in \points {
-          \node[circle,inner sep=0pt,minimum size=2pt,fill=boxdgray] at \p {};
-        }
-        \draw[very thick,boxpink,dashed] (2.2,0) coordinate (b1) -- node[left,pos=0.9] {\color{boxpink}$\set{B}$} (5,3.1) coordinate (b2);
-        \draw[very thick] (0,0) rectangle (5, 5);
-        \begin{scope}[on background layer]
+      \vskip 0.1cm
+      \resizebox{0.95\textwidth}{!}{
+        \begin{tikzpicture}
+          \coordinate (b1) at (2.2,0);
+          \coordinate (b2) at (5,3.1);
           \fill[boxblue!50] (0,0) -- (b1) -- (b2) -- (5,5) -- (0,5) -- cycle;
           \fill[boxred!50] (b1) -- (5,0) -- (b2) -- cycle;
-        \end{scope}
-      \end{tikzpicture}
+          \foreach \p in \points {
+            \node[circle,inner sep=0pt,minimum size=2pt,fill=boxdgray] at \p {};
+          }
+          \draw[very thick,boxpink,dashed] (b1) -- node[left,pos=0.9] {\color{boxpink}$\set{B}$} (b2);
+          \draw[very thick] (0,0) rectangle (5, 5);
+
+          \begin{axis}[
+            xshift=6cm,
+            samples=30,domain=0:7, axis lines*=left,
+            every axis x label/.style={at=(current axis.right of origin),anchor=west},
+            every axis y label/.style={at={(axis description cs:0,1)},anchor=south},
+            enlargelimits=false, clip=false, axis on top,
+            xmin=0,xmax=7,ymin=0,ymax=1,
+            xlabel=$Z$,ylabel=$p(Z)$,,xtick={1,...,7},
+            grid=major,height=6.45cm,
+          ]
+            \addplot[only marks,mark options={boxorange,fill=boxorange},mark=triangle*,mark size=4] table[x={z},y expr=0] {data/cloud_pos.dat};
+            \path[name path=axis] (axis cs:0,0) -- (axis cs:5,0);
+            \addplot[very thick,boxorange,name path=g1] {gauss(3.76,0.95)};
+            \addplot[boxorange!60] fill between [of=g1 and axis];
+            \node at (3.76,0.5) {$\mathcal{N}(\mu=3.76,\sigma=0.95)$};
+          \end{axis}
+          \node at (12,0) {};
+        \end{tikzpicture}
       }
+      \LARGE
+      \begin{equation*}
+        \textcolor{boxpink}{\set{B}}(x,y)=\begin{bmatrix} x & y\end{bmatrix}\cdot
+        \scalebox{0.75}{$\begin{bmatrix*}[r] 1.10\\ -1.00 \end{bmatrix*}$}-2.43
+      \end{equation*}
     \end{vhcenterb}
   \end{minipage}
   \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
     \begin{vhcenterb}
+      \vskip 1cm
       \resizebox{0.3\textwidth}{!}{
       \begin{tikzpicture}
         \newVtreeNode[fill=boxgreen]{v}{0,0}{1};
-        \newVtreeNode{z}{$(v) + (-0.5,-1)$}{$Z$};
+        \newVtreeNode[fill=boxorange]{z}{$(v) + (-0.5,-1)$}{$Z$};
         \newVtreeNode[double color fill={boxblue}{boxred},shading angle=45]{r}{$(v) + (0.5,-1)$}{2};
         \newVtreeNode{y}{$(r) + (-0.5,-1)$}{$Y$};
         \newVtreeNode{x}{$(r) + (0.5,-1)$}{$X$};
@@ -3007,24 +3034,127 @@ in
         \draw (r) -- (x);
       \end{tikzpicture}
       }
-      \vskip 2cm
-      \resizebox{0.45\textwidth}{!}{
+      \vskip 1cm
+      \resizebox{0.7\textwidth}{!}{
       \begin{tikzpicture}
         \newSumNode[fill=boxgreen,label=above left:{\color{boxgreen}$\set{A}$}]{r}{0,0};
-        \newProdNode[fill=boxorange]{p1}{$(r) + (-1,-1)$};
-        \newProdNode[fill=boxorange]{p2}{$(r) + (1,-1)$};
-        %\newSumNode[fill=boxpink]{b1}{$(
-        \newProdNode[fill=boxblue,label=below:{$\textcolor{boxpink}{\set{B}}(\set{x})>0$}]{q1}{$(p1) + (-1,-1)$};
-        \newProdNode[fill=boxred,label=below:{$\textcolor{boxpink}{\set{B}}(\set{x})\leq 0$}]{q2}{$(p1) + (1,-1)$};
-        \draw[edge] (r) -- (p1);
-        \draw[edge] (r) -- (p2);
+        \newProdNode[label=above left:{$\textcolor{boxgreen}{\set{A}}(\set{x})>0$},fill=boxblue]{p1}{$(r) + (-1,-1)$};
+        \newProdNode[label=above right:{$\textcolor{boxgreen}{\set{A}}(\set{x})\leq 0$},fill=boxred]{p2}{$(r) + (1,-1)$};
+        \newSumNode[fill=boxpink,label=above left:{\color{boxpink}$\set{B}$}]{b1}{$(p1) + (-1,-1)$};
+        \newGaussNode[label=below:{\scriptsize$\mathcal{N}(3.76,0.95)$},fill=boxorange]{b2}{$(p1) + (1,-1)$};
+        \newProdNode[fill=boxblue,label=below:{$\textcolor{boxpink}{\set{B}}(\set{x})>0$}]{q1}{$(b1) + (-1,-1)$};
+        \newProdNode[fill=boxred,label=below:{$\textcolor{boxpink}{\set{B}}(\set{x})\leq 0$}]{q2}{$(b1) + (1,-1)$};
+        \node at ($(p2) + (0,-0.5)$) {$\vdots$};
+        \draw[edge] (r) -- node[pos=0.5,above left] {$\frac{16}{36}$} (p1);
+        \draw[edge] (r) -- node[pos=0.5,above right] {$\frac{20}{36}$} (p2);
         \draw[edge] (p1) -- (b1);
         \draw[edge] (p1) -- (b2);
+        \draw[edge] (b1) -- node[pos=0.5,above left] {$\frac{8}{16}$} (q1);
+        \draw[edge] (b1) -- node[pos=0.5,above right] {$\frac{8}{16}$} (q2);
       \end{tikzpicture}
       }
     \end{vhcenterb}
   \end{minipage}
 \end{center}
+
+% Slide: Experiments 1
+
+\newpage
+
+\newtitle{Experiments}
+
+\begin{vhcenterb}
+  \resizebox{0.9\textwidth}{!}{
+  \begin{tabular}{c|cccc||c|cccc}
+    \hline
+    \textbf{Dataset} & \textbf{Vars} & \textbf{Train} & \textbf{Test} & \textbf{Domain} &
+    \textbf{Dataset} & \textbf{Vars} & \textbf{Train} & \textbf{Test} & \textbf{Domain}\\
+    \hline
+    \textsc{accidents } & 111  & 12758   & 2551   & $\{0,1\}$ & \textsc{nltcs     } & 16  & 16181    & 3236    & $\{0,1\}$ \\
+    \textsc{ad        } & 1556 & 2461    & 491    & $\{0,1\}$ & \textsc{plants    } & 69  & 17412    & 3482    & $\{0,1\}$ \\
+    \textsc{audio     } & 100  & 15000   & 3000   & $\{0,1\}$ & \textsc{pumsb-star} & 163 & 12262    & 2452    & $\{0,1\}$ \\
+    \textsc{bbc       } & 1058 & 1670    & 330    & $\{0,1\}$ & \textsc{eachmovie } & 500 & 4524     & 591     & $\{0,1\}$ \\
+    \textsc{netflix   } & 100  & 15000   & 3000   & $\{0,1\}$ & \textsc{retail    } & 135 & 22041    & 4408    & $\{0,1\}$ \\
+    \textsc{book      } & 500  & 8700    & 1739   & $\{0,1\}$ & \textsc{abalone   } & 8   & 3760     & 417     & $\mathbb{R}$ \\
+    \textsc{20-newsgrp} & 910  & 11293   & 3764   & $\{0,1\}$ & \textsc{ca        } & 22  & 7373     & 819     & $\mathbb{R}$ \\
+    \textsc{reuters-52} & 889  & 6532    & 1540   & $\{0,1\}$ & \textsc{quake     } & 4   & 1961     & 217     & $\mathbb{R}$ \\
+    \textsc{webkb     } & 839  & 2803    & 838    & $\{0,1\}$ & \textsc{sensorless} & 48  & 52659    & 5850    & $\mathbb{R}$ \\
+    \textsc{dna       } & 180  & 1600    & 1186   & $\{0,1\}$ & \textsc{banknote  } & 4   & 1235     & 137     & $\mathbb{R}$ \\
+    \textsc{jester    } & 100  & 9000    & 4116   & $\{0,1\}$ & \textsc{flowsize  } & 3   & 1358674  & 150963  & $\mathbb{R}$ \\
+    \textsc{kdd       } & 65   & 180092  & 34955  & $\{0,1\}$ & \textsc{kinematics} & 8   & 7373     & 819     & $\mathbb{R}$ \\
+    \textsc{kosarek   } & 190  & 33375   & 6675   & $\{0,1\}$ & \textsc{iris      } & 4   & 90       & 10      & $\mathbb{R}$ \\
+    \textsc{msnbc     } & 17   & 291326  & 58265  & $\{0,1\}$ & \textsc{oldfaith  } & 2   & 245      & 27      & $\mathbb{R}$ \\
+    \textsc{msweb     } & 294  & 29441   & 5000   & $\{0,1\}$ & \textsc{chemdiabet} & 3   & 131      & 14      & $\mathbb{R}$ \\
+    \hline
+  \end{tabular}
+  }
+\end{vhcenterb}
+
+% Slide: Experiments 2
+
+\newpage
+
+\newtitle{Experiments}
+
+\begin{vhcenterb}
+  \resizebox{0.9\textwidth}{!}{
+  \begin{tabular}{c|ccccc|ccccc}
+    \hline
+    \textbf{Dataset} & \textbf{\textproc{LearnSPN}} & \textbf{\textproc{Strudel}} &
+    \textbf{\textproc{LearnPSDD}} & \textbf{\textproc{XPC}} & \textbf{\textproc{Prometheus}} &
+    \textbf{\textproc{LearnRP}-F} & \textbf{\textproc{LearnRP}-100} & \textbf{\textproc{LearnRP}-30} &
+    \textbf{\textproc{LearnRP}-20} & \textbf{\textproc{LearnRP}-10}\\
+    \hline
+    \textsc{accidents } & -30.03 & $|$-28.73$|$ & -30.16 & -31.02 & \textbf{-27.91} & \underline{-28.65} & -28.87 & -29.38 & -29.58 & -29.99\\
+    \textsc{ad        } & -19.73 & \underline{-16.38} & -31.78 & \textbf{-15.50} & -23.96 & $|$-19.20$|$ & -20.32 & -21.42 & -21.44 & -21.94\\
+    \textsc{audio     } & -40.50 & -41.50 & \underline{-39.94} & -40.91 & \textbf{-39.80} & $|$-40.18$|$ & -40.23 & -40.46 & -40.63 & -40.94\\
+    \textsc{bbc       } & $|$-250.68$|$ & -254.41 & -253.19 & \textbf{-248.34} & \underline{-248.50} & -254.97 & -255.55 & -262.35 & -257.67 & -262.39\\
+    \textsc{netflix   } & $|$-57.02$|$ & -58.69 & \textbf{-55.71} & -57.58 & \underline{-56.47} & -57.07 & -57.05 & -57.29 & -57.48 & -57.66\\
+    \textsc{book      } & -35.88 & -34.99 & -34.97 & -34.75 & -34.40 & \underline{-33.57} & \textbf{-33.52} & -34.34 & $|$-34.24$|$ & -34.73\\
+    \textsc{20-newsgrp} & -155.92 & -154.47 & -155.97 & $|$-153.75$|$ & -154.17 & \underline{-152.78} & \textbf{-152.76} & -154.32 & -155.03 & -156.26\\
+    \textsc{reuters-52} & $|$-85.06$|$ & -86.22 & -89.61 & \underline{-84.70} & \textbf{-84.59} & -85.73 & -85.47 & -87.41 & -87.05 & -89.26\\
+    \textsc{webkb     } & -158.20 & -155.33 & -161.09 & \underline{-153.67} & -155.21 & -154.43 & \textbf{-152.60} & -154.83 & $|$-154.33$|$ & -158.01\\
+    \textsc{dna       } & \textbf{-82.52} & -86.22 & -88.01 & -86.61 & -84.45 & \underline{-83.03} & $|$-83.85$|$ & -84.77 & -84.98 & -85.40\\
+    \textsc{jester    } & -75.98 & -55.03 & \textbf{-51.29} & -53.43 & \underline{-52.80} & -52.92 & $|$-52.89$|$ & -53.23 & -53.22 & -53.54\\
+    \textsc{kdd       } & -2.18 & $|$-2.13$|$ & \textbf{-2.11} & -2.15 & \underline{-2.12} & $|$-2.13$|$ & -2.14 & -2.17 & -2.16 & -2.20\\
+    \textsc{kosarek   } & -10.98 & -10.68 & \textbf{-10.52} & -10.77 & \underline{-10.59} & $|$-10.65$|$ & -10.67 & -10.79 & -10.86 & -11.00\\
+    \textsc{msnbc     } & \underline{-6.11} & \textbf{-6.04} & \textbf{-6.04} & $|$-6.18$|$ & \textbf{-6.04} & -6.31 & -6.36 & -6.40 & -6.41 & -6.44\\
+    \textsc{msweb     } & -10.25 & \textbf{-9.71} & -9.89 & -9.93 & $|$-9.86$|$ & \underline{-9.85} & -9.97 & -10.06 & -10.21 & -10.27\\
+    \textsc{nltcs     } & -6.11 & -6.06 & \textbf{-5.99} & $|$-6.05$|$ & \underline{-6.01} & -6.35 & -6.23 & -6.25 & -6.27 & -6.32\\
+    \textsc{plants    } & \underline{-12.97} & $|$-12.98$|$ & -13.02 & -14.19 & \textbf{-12.81} & -13.68 & -14.00 & -14.26 & -14.40 & -14.70\\
+    \textsc{pumsb-star} & $|$-24.78$|$ & \underline{-24.12} & -26.12 & -26.06 & \textbf{-22.75} & -25.88 & -26.19 & -26.36 & -26.54 & -27.17\\
+    \textsc{eachmovie } & -52.48 & -53.67 & -58.01 & -54.82 & $|$-51.49$|$ & \underline{-51.37} & \textbf{-51.06} & -51.55 & -52.86 & -52.21\\
+    \textsc{retail    } & -11.04 & \underline{-10.81} & \textbf{-10.72} & -10.94 & -10.87 & $|$-10.85$|$ & -10.86 & -10.93 & -10.97 & -11.04\\
+    \hline
+    \multirow{2}{*}[-0.15em]{\textbf{Avg. Rank}} & 6.08 $\pm$ 3.03 & 5.28 $\pm$ 2.97 & 5.20 $\pm$ 3.86 & 5.55 $\pm$ 2.76 & \textbf{2.90} $\bm{\pm}$ \textbf{2.07} & \underline{3.83 $\pm$ 1.98} & $|$4.15 $\pm$ 2.03$|$ & 6.35 $\pm$ 1.50 & 6.95 $\pm$ 1.70 & 8.72 $\pm$ 1.50 \\
+                                                 & 4.80 $\pm$ 1.91 & 4.22 $\pm$ 1.81 & $|$4.05 $\pm$ 2.56$|$ & 4.60 $\pm$ 1.93 & \textbf{2.55} $\bm{\pm}$ \textbf{1.43} & \underline{3.62 $\pm$ 1.56} & 4.15 $\pm$ 2.03 \\
+    \hline
+    \multirow{2}{*}[-0.15em]{\textbf{Pos. (mean)}} & 7th & 5th & 4th & 6th & \textbf{1st} & \underline{2nd} & $|$3rd$|$ & 8th & 9th & 10th \\
+                                                   & 7th & 5th & $|$3rd$|$ & 6th & \textbf{1st} & \underline{2nd} & 4th \\
+    \hline
+  \end{tabular}
+  }
+\end{vhcenterb}
+
+% Slide: Experiments 3
+
+\newpage
+
+\newtitle{Experiments}
+
+\begin{vhcenterb}
+  \includegraphics[height=0.9\textheight]{figures/all_slides.pdf}
+\end{vhcenterb}
+
+% Slide: Experiments 4
+
+\newpage
+
+\newtitle{Experiments}
+
+\begin{vhcenterb}
+  \includegraphics[height=0.9\textheight]{figures/all_rand_slides.pdf}
+\end{vhcenterb}
 
 \nobibliography{refs.bib}
 
