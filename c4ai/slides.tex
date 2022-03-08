@@ -1535,6 +1535,417 @@ in
 
 \textcolor{boxdgray}{\cite{kisa14}}
 
+% Slide: PC - Learning PCs
+
+\newpage
+
+\newtitle{Learning Probabilistic Circuits}
+
+\begin{vhcenterb}
+  \newcommand{\divclass}{\textproc{DIV}}
+  \newcommand{\incrclass}{\textproc{INCR}}
+  \newcommand{\randclass}{\textproc{RAND}}
+  \begin{minipage}{0.35\textwidth}
+    \vskip 0.5cm
+    \large
+    \textbf{Divide-and-Conquer Approaches (\divclass)}
+    \begin{itemize}
+      \item Usually recursive;
+      \item Splits data by similarity and stat dep;
+      \item Stat dep usually costly;
+      \item Usually tree-shaped.
+    \end{itemize}
+
+    \textbf{Incremental Approaches (\incrclass)}
+    \begin{itemize}
+      \item Requires an initial circuit;
+      \item Grows from local transformations;
+      \item Local transformations preserve properties;
+      \item Searching for candidates to transform is costly.
+    \end{itemize}
+
+    \textbf{Random Approaches (\randclass)}
+    \begin{itemize}
+      \item Fast;
+      \item Randomly generates circuits;
+      \item Data blind and data guided approaches exist;
+      \item Usually relies on many hyperparams;
+      \item Worse performance.
+    \end{itemize}
+  \end{minipage}
+  \begin{minipage}[c][0.8\textheight]{0.625\textwidth}
+    \begin{center}
+      \resizebox{!}{0.9\textheight}{
+      \vbox{
+      \begin{minipage}[t]{0.45\textwidth}
+        \begin{tikzpicture}
+          \newSumNode[fill=boxpink!50]{r}{0,0};
+          \newProdNode[fill=boxgreen!70]{p1}{$(r) + (-1.5,-1.5)$};
+          \newProdNode[fill=boxorange!60]{p2}{$(r) + (0,-1.5)$};
+          \newProdNode[fill=boxblue!50]{p3}{$(r) + (1.5,-1.5)$};
+          \draw[edge] (r) -- node[midway,above left] {$\frac{3}{9}$} (p1);
+          \draw[edge] (r) -- node[midway,left] {$\frac{2}{9}$} (p2);
+          \draw[edge] (r) -- node[midway,above right] {$\frac{4}{9}$} (p3);
+
+          \node at ($(r) + (-4, -0.75)$) {
+            \begin{tabular}{ccccc}
+              \hline
+              $A$ & $B$ & $C$ & $D$ & $E$\\
+              \hline
+              \rowcolor{boxgreen!70}
+              0 & 1 & 0 & 0 & 1\\
+              \rowcolor{boxgreen!70}
+              1 & 0 & 1 & 1 & 1\\
+              \rowcolor{boxblue!50}
+              1 & 1 & 0 & 1 & 1\\
+              \rowcolor{boxblue!50}
+              0 & 0 & 1 & 0 & 0\\
+              \rowcolor{boxgreen!70}
+              1 & 1 & 0 & 1 & 0\\
+              \rowcolor{boxblue!50}
+              0 & 1 & 1 & 0 & 1\\
+              \rowcolor{boxorange!60}
+              1 & 0 & 1 & 1 & 1\\
+              \rowcolor{boxorange!60}
+              1 & 1 & 0 & 0 & 0\\
+              \rowcolor{boxblue!50}
+              0 & 1 & 1 & 0 & 1\\
+              \hline
+            \end{tabular}
+          };
+        \end{tikzpicture}
+      \end{minipage}
+      \begin{minipage}[t]{0.45\textwidth}
+        \newcolumntype{x}{>{\columncolor{boxgreen!70}}c}
+        \newcolumntype{y}{>{\columncolor{boxorange!60}}c}
+        \newcolumntype{z}{>{\columncolor{boxblue!50}}c}
+        \begin{tikzpicture}
+          \newProdNode[fill=boxpink!50]{r}{0,0};
+          \newSumNode[label=below:{$\{A,E\}$},fill=boxgreen!70]{s1}{$(r) + (-1.5,-1.5)$};
+          \newSumNode[label=below:{$\{B,C\}$},fill=boxorange!60]{s2}{$(r) + (0,-1.5)$};
+          \newSumNode[label=below:{$\{D\}$},fill=boxblue!50]{s3}{$(r) + (1.5,-1.5)$};
+          \draw[edge] (r) -- (s1); \draw[edge] (r) -- (s2); \draw[edge] (r) -- (s3);
+
+          \node at ($(-4, -0.75)$) {
+            \begin{tabular}{xyyzx}
+              \hline
+              \multicolumn{1}{c}{$A$} & \multicolumn{1}{c}{$B$} & \multicolumn{1}{c}{$C$} &
+              \multicolumn{1}{c}{$D$} & \multicolumn{1}{c}{$E$}\\
+              \hline
+              0 & 1 & 0 & 0 & 1\\
+              1 & 0 & 1 & 1 & 1\\
+              1 & 1 & 0 & 1 & 1\\
+              0 & 0 & 1 & 0 & 0\\
+              1 & 1 & 0 & 1 & 0\\
+              0 & 1 & 1 & 0 & 1\\
+              1 & 0 & 1 & 1 & 1\\
+              1 & 1 & 0 & 0 & 0\\
+              0 & 1 & 1 & 0 & 1\\
+              \hline
+            \end{tabular}
+          };
+        \end{tikzpicture}
+      \end{minipage}
+      \vskip 0.5cm
+
+      \begin{tikzpicture}
+        \newNamedOrNode[scale=1,draw=red,very thick,inputs=nn]{r}{0,0}{$\alpha$};
+        \newAndNode[draw=red,very thick,inputs=nn]{p1}{0,-1};
+        \newNamedOrNode[draw=red,very thick,inputs=nn]{s1}{$(p1.input 1) + (0,-1)$}{$\beta$};
+        \newNamedOrNode[inputs=nn]{s2}{$(p1.input 2) + (1.5,-1)$}{$\gamma$};
+        \newAndNode[inputs=nn]{p2}{$(s1.input 1) + (-1.0,-1)$};
+        \newAndNode[inputs=nn]{p3}{$(s1.input 2) + (1.0,-1)$};
+        \newOrNode[inputs=nn]{s3}{$(p2.input 2) + (0.5,-1)$};
+        \newOrNode[inputs=nn]{s4}{$(p3.input 2) + (0.5,-1)$};
+        \node (a) at ($(p2.input 1) + (0.0,-1)$) {$A$};
+        \node (na) at ($(p3.input 1) + (0.0,-1)$) {$\neg A$};
+        \draw[edge,draw=red,very thick] (r.west) -- (p1.east);
+        \draw[edge,draw=red,very thick] (p1.input 1) -- (s1.east);
+        \draw[edge,draw=red,very thick] (p1.input 2) -- ++(0,-0.25) -| (s2.east);
+        \draw[edge] (s1.input 1) -- ++(0,-0.25) -| (p2.east);
+        \draw[edge] (s1.input 2) -- ++(0,-0.25) -| (p3.east);
+        \draw[edge] (p2.input 1) -- (a);
+        \draw[edge] (p2.input 2) -- ++(0,-0.25) -| (s3.east);
+        \draw[edge] (p3.input 1) -- (na);
+        \draw[edge] (p3.input 2) -- ++(0,-0.25) -| (s4.east);
+
+        \node[style={single arrow,draw=red,thick}] (arrow) at (1.75,-0.5)
+          {\small\textrm{\textsc{Split}} on $A$};
+
+        \begin{scope}[every node/.style={minimum size=15pt}]
+          \newNamedOrNode[draw=red,very thick,inputs=nn]{r}{$(arrow.east) + (1.25,0.5)$}{$\alpha$};
+          \newAndNode[draw=red,very thick,inputs=nn]{p1}{$(r) + (0.75,-1)$};
+          \newAndNode[draw=red,very thick,inputs=nn]{p12}{$(r) + (-0.75,-1)$};
+          \newNamedOrNode[draw=red,very thick,inputs=nn]{s1}{$(p1.input 1) + (0,-1)$}{\tiny$\beta\wedge\overline{A}$};
+          \newNamedOrNode[draw=red,very thick,inputs=nn]{s12}{$(p12.input 1) + (0,-1)$}{\tiny$\beta\wedge A$};
+          \newNamedOrNode[inputs=nn]{s2}{$(p1.input 2) + (1.25,-1)$}{$\gamma$};
+          \newAndNode[inputs=nn]{p2}{$(s12.west) + (0,-1)$};
+          \newAndNode[inputs=nn]{p3}{$(s1.west) + (0,-1)$};
+          \newOrNode[inputs=nn]{s3}{$(p2.input 2) + (0.5,-1)$};
+          \newOrNode[inputs=nn]{s4}{$(p3.input 2) + (0.5,-1)$};
+        \end{scope}
+
+        \node (a) at ($(p2.input 1) + (0.0,-1)$) {$A$};
+        \node (na) at ($(p3.input 1) + (0.0,-1)$) {$\neg A$};
+        \draw[edge,draw=red,very thick] (r.input 1) -- ++(0,-0.15) -| (p12.east);
+        \draw[edge,draw=red,very thick] (r.input 2) -- ++(0,-0.15) -| (p1.east);
+        \draw[edge,draw=red,very thick] (p1.input 1) -- (s1.east);
+        \draw[edge,draw=red,very thick] (p1.input 2) -- ++(0,-0.25) -| (s2.east);
+        \draw[edge,draw=red,very thick] (p12.input 2) -- ++(0,-0.35) -| (s2.east);
+        \draw[edge,draw=red,very thick] (p12.input 1) -- (s12.east);
+        \draw[edge] (s12.west) -- ++(0,-0.25) -| (p2.east);
+        \draw[edge] (s1.west) -- ++(0,-0.25) -| (p3.east);
+        \draw[edge] (p2.input 1) -- (a);
+        \draw[edge] (p2.input 2) -- ++(0,-0.25) -| (s3.east);
+        \draw[edge] (p3.input 1) -- (na);
+        \draw[edge] (p3.input 2) -- ++(0,-0.25) -| (s4.east);
+
+        \begin{scope}[xshift=8.5cm]
+          \newNamedOrNode[draw=red,very thick,inputs=nn]{s1}{0,-1.5}{$\alpha$};
+          \newAndNode[inputs=nn]{r1}{-1,0};
+          \newAndNode[inputs=nn]{r2}{1,0};
+          \newAndNode[inputs=nn]{p1}{$(r1)+(0,-3)$};
+          \newAndNode[inputs=nn]{p2}{$(r2)+(0,-3)$};
+          \newOrNode[inputs=nn]{l11}{$(p1.input 1)+(0,-1.5)$};
+          \newOrNode[inputs=nn]{l12}{$(p1.input 2)+(1,-1.5)$};
+          \newOrNode[inputs=nn]{l21}{$(p2.input 1)+(0,-1.5)$};
+          \newOrNode[inputs=nn]{l22}{$(p2.input 2)+(1,-1.5)$};
+          \draw[edge] (r1.west) -- ++(0,-0.25) -| (s1.east);
+          \draw[edge,draw=red,very thick] (r2.west) -- ++(0,-0.25) -| (s1.east);
+          \draw[edge] (s1.input 1) -- ++(0,-0.25) -| (p1.east);
+          \draw[edge] (s1.input 2) -- ++(0,-0.25) -| (p2.east);
+          \draw[edge] (p1.input 1) -- ++(0,-0.25) -| (l11.east);
+          \draw[edge] (p1.input 2) -- ++(0,-0.25) -| (l12.east);
+          \draw[edge] (p2.input 1) -- ++(0,-0.25) -| (l21.east);
+          \draw[edge] (p2.input 2) -- ++(0,-0.25) -| (l22.east);
+
+          \node[style={single arrow,draw=red,thick}] (arrow) at (2.5,-0.5)
+            {\small\textrm{\textsc{Clone}}};
+
+          \newAndNode[inputs=nn]{r1}{4.25,0};
+          \newAndNode[inputs=nn]{r2}{6.25,0};
+          \newAndNode[inputs=nn]{p1}{$(r1)+(-0.5,-3)$};
+          \newAndNode[inputs=nn]{p2}{$(r2)+(-0.5,-3)$};
+          \newOrNode[inputs=nn]{l11}{$(p1.input 1)+(0,-1.5)$};
+          \newOrNode[inputs=nn]{l12}{$(p1.input 2)+(1,-1.5)$};
+          \newOrNode[inputs=nn]{l21}{$(p2.input 1)+(0,-1.5)$};
+          \newOrNode[inputs=nn]{l22}{$(p2.input 2)+(1,-1.5)$};
+          \newNamedOrNode[draw=red,very thick,inputs=nn]{s1}{$(r1.west) + (0,-1)$}{$\alpha$};
+          \newNamedOrNode[draw=red,very thick,inputs=nn]{s2}{$(r2.west) + (0,-1)$}{$\alpha$};
+          \newAndNode[draw=red,very thick,inputs=nn]{p3}{$(p1)+(1,0)$};
+          \newAndNode[draw=red,very thick,inputs=nn]{p4}{$(p2)+(1,0)$};
+          \draw[edge] (r1.west) -- ++(0,-0.25) -| (s1.east);
+          \draw[edge,draw=red,very thick] (r2.west) -- ++(0,-0.25) -| (s2.east);
+          \draw[edge] (s1.input 1) -- ++(0,-0.5) -| (p1.east);
+          \draw[edge] (s1.input 2) -- ++(0,-0.5) -| (p2.east);
+          \draw[edge,draw=red,very thick] (s2.input 1) -- ++(0,-0.25) -| (p3.east);
+          \draw[edge,draw=red,very thick] (s2.input 2) -- ++(0,-0.25) -| (p4.east);
+          \draw[edge] (p1.input 1) -- ++(0,-0.25) -| (l11.east);
+          \draw[edge] (p1.input 2) -- ++(0,-0.5) -| (l12.east);
+          \draw[edge] (p2.input 1) -- ++(0,-0.25) -| (l21.east);
+          \draw[edge] (p2.input 2) -- ++(0,-0.5) -| (l22.east);
+          \draw[edge,draw=red,very thick] (p3.input 1) -- ++(0,-0.25) -| (l11.east);
+          \draw[edge,draw=red,very thick] (p3.input 2) -- ++(0,-0.5) -| (l12.east);
+          \draw[edge,draw=red,very thick] (p4.input 1) -- ++(0,-0.25) -| (l21.east);
+          \draw[edge,draw=red,very thick] (p4.input 2) -- ++(0,-0.5) -| (l22.east);
+        \end{scope}
+      \end{tikzpicture}
+      \vskip 0.5cm
+
+      \begin{tikzpicture}
+        \draw[very thick,dashed,boxgreen] (-7.5,-0.75) -- (7.5,-0.75);
+        \draw[very thick,dashed,boxred] (-7.5,-2.25) -- (7.5,-2.25);
+        \draw[very thick,dashed,boxpurple] (-7.5,-3.75) -- (7.5,-3.75);
+        \draw[very thick,dashed,boxblue] (-7.5,-5.25) -- (7.5,-5.25);
+        \draw[very thick,dashed,boxorange] (-7.5,-6.75) -- (7.5,-6.75);
+
+        \draw[draw=boxteal,very thick,fill=boxteal!30] (-1.25,-0.5) rectangle (1.25,0.5);
+        \newSumNode[fill=boxgreen]{r}{0,0};
+        \node at ($(r) + (0,1)$) {$\{A,B,C,D,E,F,G\}$};
+
+        \node (p) at ($(r) + (-4,-1.5)$) {};
+        \draw[very thick,fill=boxpink!30,draw=boxpink!70] ($(-1.25,-0.5) + (p)$) rectangle ($(1.25,0.5) + (p)$);
+        \newProdNode[fill=boxred!70]{p1}{$(p) + (-0.75,0)$};
+        \newProdNode[fill=boxred!70]{p2}{$(p) + (-0.25,0)$};
+        \newProdNode[fill=boxred!70]{p3}{$(p) + (0.25,0)$};
+        \newProdNode[fill=boxred!70]{p4}{$(p) + (0.75,0)$};
+
+        \draw[edge] (r) -- (p1.north); \draw[edge] (r) -- (p2.north);
+        \draw[edge] (r) -- (p3.north); \draw[edge] (r) -- (p4.north);
+
+        \node (q) at ($(r) + (4,-1.5)$) {};
+        \draw[very thick,fill=boxpink!30,draw=boxpink!70] ($(q) + (-1.25,-0.5)$) rectangle ($(q) + (1.25,0.5)$);
+        \newProdNode[fill=boxred!70]{q1}{$(q) + (-0.75,0)$};
+        \newProdNode[fill=boxred!70]{q2}{$(q) + (-0.25,0)$};
+        \newProdNode[fill=boxred!70]{q3}{$(q) + (0.25,0)$};
+        \newProdNode[fill=boxred!70]{q4}{$(q) + (0.75,0)$};
+
+        \draw[edge] (r) -- (q1.north); \draw[edge] (r) -- (q2.north);
+        \draw[edge] (r) -- (q3.north); \draw[edge] (r) -- (q4.north);
+
+        \node (s1) at ($(p) + (-2,-1.5)$) {};
+        \draw[draw=boxteal,very thick,fill=boxteal!30] ($(s1) + (-1.25,-0.5)$) rectangle ($(s1) + (1.25,0.5)$);
+        \newSumNode[fill=boxpurple!60]{s11}{$(s1) + (-0.5,0)$};
+        \newSumNode[fill=boxpurple!60]{s12}{$(s1) + (0.5,0)$};
+
+        \node (s2) at ($(p) + (2,-1.5)$) {};
+        \draw[draw=boxteal,very thick,fill=boxteal!30] ($(s2) + (-1.25,-0.5)$) rectangle ($(s2) + (1.25,0.5)$);
+        \newSumNode[fill=boxpurple!60]{s21}{$(s2) + (-0.5,0)$};
+        \newSumNode[fill=boxpurple!60]{s22}{$(s2) + (0.5,0)$};
+
+        \draw[edge] (p1) -- (s11.north); \draw[edge] (p1) -- (s21.north);
+        \draw[edge] (p2) -- (s11.north); \draw[edge] (p2) -- (s22.north);
+        \draw[edge] (p3) -- (s12.north); \draw[edge] (p3) -- (s21.north);
+        \draw[edge] (p4) -- (s12.north); \draw[edge] (p4) -- (s22.north);
+
+        \node at ($(s1) + (-0.5,1)$) {$\{A,D,F\}$};
+        \node at ($(s2) + (0.5,1)$) {$\{B,C,E,G\}$};
+
+        \node (z1) at ($(q) + (-2,-1.5)$) {};
+        \draw[draw=boxteal,very thick,fill=boxteal!30] ($(z1) + (-1.25,-0.5)$) rectangle ($(z1) + (1.25,0.5)$);
+        \newSumNode[fill=boxpurple!60]{z11}{$(z1) + (-0.5,0)$};
+        \newSumNode[fill=boxpurple!60]{z12}{$(z1) + (0.5,0)$};
+
+        \node (z2) at ($(q) + (2,-1.5)$) {};
+        \draw[draw=boxteal,very thick,fill=boxteal!30] ($(z2) + (-1.25,-0.5)$) rectangle ($(z2) + (1.25,0.5)$);
+        \newSumNode[fill=boxpurple!60]{z21}{$(z2) + (-0.5,0)$};
+        \newSumNode[fill=boxpurple!60]{z22}{$(z2) + (0.5,0)$};
+
+        \node at ($(z1) + (-0.5,1)$) {$\{B,D,F,G\}$};
+        \node at ($(z2) + (0.5,1)$) {$\{A,C,E\}$};
+
+        \draw[edge] (q1) -- (z11.north); \draw[edge] (q1) -- (z21.north);
+        \draw[edge] (q2) -- (z11.north); \draw[edge] (q2) -- (z22.north);
+        \draw[edge] (q3) -- (z12.north); \draw[edge] (q3) -- (z21.north);
+        \draw[edge] (q4) -- (z12.north); \draw[edge] (q4) -- (z22.north);
+
+        \node (t1) at ($(s1) + (0,-1.5)$) {};
+        \draw[very thick,fill=boxpink!30,draw=boxpink!70] ($(t1) + (-1.25,-0.5)$) rectangle ($(t1) + (1.25,0.5)$);
+        \newProdNode[fill=boxblue!50]{t11}{$(t1) + (-0.75,0)$};
+        \newProdNode[fill=boxblue!50]{t12}{$(t1) + (-0.25,0)$};
+        \newProdNode[fill=boxblue!50]{t13}{$(t1) + (0.25,0)$};
+        \newProdNode[fill=boxblue!50]{t14}{$(t1) + (0.75,0)$};
+
+        \draw[edge] (s11) -- (t11.north); \draw[edge] (s11) -- (t12.north);
+        \draw[edge] (s11) -- (t13.north); \draw[edge] (s11) -- (t14.north);
+
+        \draw[edge] (s12) -- (t11.north); \draw[edge] (s12) -- (t12.north);
+        \draw[edge] (s12) -- (t13.north); \draw[edge] (s12) -- (t14.north);
+
+        \node (t2) at ($(s2) + (0,-1.5)$) {};
+        \draw[very thick,fill=boxpink!30,draw=boxpink!70] ($(t2) + (-1.25,-0.5)$) rectangle ($(t2) + (1.25,0.5)$);
+        \newProdNode[fill=boxblue!50]{t21}{$(t2) + (-0.75,0)$};
+        \newProdNode[fill=boxblue!50]{t22}{$(t2) + (-0.25,0)$};
+        \newProdNode[fill=boxblue!50]{t23}{$(t2) + (0.25,0)$};
+        \newProdNode[fill=boxblue!50]{t24}{$(t2) + (0.75,0)$};
+
+        \draw[edge] (s21) -- (t21.north); \draw[edge] (s21) -- (t22.north);
+        \draw[edge] (s21) -- (t23.north); \draw[edge] (s21) -- (t24.north);
+
+        \draw[edge] (s22) -- (t21.north); \draw[edge] (s22) -- (t22.north);
+        \draw[edge] (s22) -- (t23.north); \draw[edge] (s22) -- (t24.north);
+
+        \node (u1) at ($(z1) + (0,-1.5)$) {};
+        \draw[very thick,fill=boxpink!30,draw=boxpink!70] ($(u1) + (-1.25,-0.5)$) rectangle ($(u1) + (1.25,0.5)$);
+        \newProdNode[fill=boxblue!50]{u11}{$(u1) + (-0.75,0)$};
+        \newProdNode[fill=boxblue!50]{u12}{$(u1) + (-0.25,0)$};
+        \newProdNode[fill=boxblue!50]{u13}{$(u1) + (0.25,0)$};
+        \newProdNode[fill=boxblue!50]{u14}{$(u1) + (0.75,0)$};
+
+        \node (u2) at ($(z2) + (0,-1.5)$) {};
+        \draw[very thick,fill=boxpink!30,draw=boxpink!70] ($(u2) + (-1.25,-0.5)$) rectangle ($(u2) + (1.25,0.5)$);
+        \newProdNode[fill=boxblue!50]{u21}{$(u2) + (-0.75,0)$};
+        \newProdNode[fill=boxblue!50]{u22}{$(u2) + (-0.25,0)$};
+        \newProdNode[fill=boxblue!50]{u23}{$(u2) + (0.25,0)$};
+        \newProdNode[fill=boxblue!50]{u24}{$(u2) + (0.75,0)$};
+
+        \draw[edge] (z11) -- (u11.north); \draw[edge] (z11) -- (u12.north);
+        \draw[edge] (z11) -- (u13.north); \draw[edge] (z11) -- (u14.north);
+
+        \draw[edge] (z12) -- (u11.north); \draw[edge] (z12) -- (u12.north);
+        \draw[edge] (z12) -- (u13.north); \draw[edge] (z12) -- (u14.north);
+
+        \draw[edge] (z21) -- (u21.north); \draw[edge] (z21) -- (u22.north);
+        \draw[edge] (z21) -- (u23.north); \draw[edge] (z21) -- (u24.north);
+
+        \draw[edge] (z22) -- (u21.north); \draw[edge] (z22) -- (u22.north);
+        \draw[edge] (z22) -- (u23.north); \draw[edge] (z22) -- (u24.north);
+
+        \node (l1) at ($(u1) + (-0.75,-1.5)$) {};
+        \draw[draw=boxgoldenrod,very thick,fill=boxgoldenrod!30] ($(l1) + (-0.65,-0.5)$) rectangle ($(l1) + (0.65,0.5)$);
+        \newGaussNode[fill=boxorange!80]{l11}{$(l1) + (-0.25,0)$};
+        \newGaussNode[fill=boxorange!80]{l12}{$(l1) + (0.25,0)$};
+
+        \node (l2) at ($(u1) + (0.75,-1.5)$) {};
+        \draw[draw=boxgoldenrod,very thick,fill=boxgoldenrod!30] ($(l2) + (-0.65,-0.5)$) rectangle ($(l2) + (0.65,0.5)$);
+        \newGaussNode[fill=boxorange!80]{l21}{$(l2) + (-0.25,0)$};
+        \newGaussNode[fill=boxorange!80]{l22}{$(l2) + (0.25,0)$};
+
+        \draw[edge] (u11) -- (l11.north); \draw[edge] (u11) -- (l21.north);
+        \draw[edge] (u12) -- (l11.north); \draw[edge] (u12) -- (l22.north);
+        \draw[edge] (u13) -- (l12.north); \draw[edge] (u13) -- (l21.north);
+        \draw[edge] (u14) -- (l12.north); \draw[edge] (u14) -- (l22.north);
+
+        \node (l3) at ($(u2) + (-0.75,-1.5)$) {};
+        \draw[draw=boxgoldenrod,very thick,fill=boxgoldenrod!30] ($(l3) + (-0.65,-0.5)$) rectangle ($(l3) + (0.65,0.5)$);
+        \newGaussNode[fill=boxorange!80]{l31}{$(l3) + (-0.25,0)$};
+        \newGaussNode[fill=boxorange!80]{l32}{$(l3) + (0.25,0)$};
+
+        \node (l4) at ($(u2) + (0.75,-1.5)$) {};
+        \draw[draw=boxgoldenrod,very thick,fill=boxgoldenrod!30] ($(l4) + (-0.65,-0.5)$) rectangle ($(l4) + (0.65,0.5)$);
+        \newGaussNode[fill=boxorange!80]{l41}{$(l4) + (-0.25,0)$};
+        \newGaussNode[fill=boxorange!80]{l42}{$(l4) + (0.25,0)$};
+
+        \draw[edge] (u21) -- (l31.north); \draw[edge] (u21) -- (l41.north);
+        \draw[edge] (u22) -- (l31.north); \draw[edge] (u22) -- (l42.north);
+        \draw[edge] (u23) -- (l32.north); \draw[edge] (u23) -- (l41.north);
+        \draw[edge] (u24) -- (l32.north); \draw[edge] (u24) -- (l42.north);
+
+        \node at ($(l3) + (0,-1)$) {$\{A,C\}$};
+        \node at ($(l4) + (0,-1)$) {$\{E\}$};
+        \node at ($(l1) + (0,-1)$) {$\{B,D\}$};
+        \node at ($(l2) + (0,-1)$) {$\{F,G\}$};
+
+        \node (l1) at ($(t1) + (-0.75,-1.5)$) {};
+        \draw[draw=boxgoldenrod,very thick,fill=boxgoldenrod!30] ($(l1) + (-0.65,-0.5)$) rectangle ($(l1) + (0.65,0.5)$);
+        \newGaussNode[fill=boxorange!80]{l11}{$(l1) + (-0.25,0)$};
+        \newGaussNode[fill=boxorange!80]{l12}{$(l1) + (0.25,0)$};
+
+        \node (l2) at ($(t1) + (0.75,-1.5)$) {};
+        \draw[draw=boxgoldenrod,very thick,fill=boxgoldenrod!30] ($(l2) + (-0.65,-0.5)$) rectangle ($(l2) + (0.65,0.5)$);
+        \newGaussNode[fill=boxorange!80]{l21}{$(l2) + (-0.25,0)$};
+        \newGaussNode[fill=boxorange!80]{l22}{$(l2) + (0.25,0)$};
+
+        \draw[edge] (t11) -- (l11.north); \draw[edge] (t11) -- (l21.north);
+        \draw[edge] (t12) -- (l11.north); \draw[edge] (t12) -- (l22.north);
+        \draw[edge] (t13) -- (l12.north); \draw[edge] (t13) -- (l21.north);
+        \draw[edge] (t14) -- (l12.north); \draw[edge] (t14) -- (l22.north);
+
+        \node (l3) at ($(t2) + (-0.75,-1.5)$) {};
+        \draw[draw=boxgoldenrod,very thick,fill=boxgoldenrod!30] ($(l3) + (-0.65,-0.5)$) rectangle ($(l3) + (0.65,0.5)$);
+        \newGaussNode[fill=boxorange!80]{l31}{$(l3) + (-0.25,0)$};
+        \newGaussNode[fill=boxorange!80]{l32}{$(l3) + (0.25,0)$};
+
+        \node (l4) at ($(t2) + (0.75,-1.5)$) {};
+        \draw[draw=boxgoldenrod,very thick,fill=boxgoldenrod!30] ($(l4) + (-0.65,-0.5)$) rectangle ($(l4) + (0.65,0.5)$);
+        \newGaussNode[fill=boxorange!80]{l41}{$(l4) + (-0.25,0)$};
+        \newGaussNode[fill=boxorange!80]{l42}{$(l4) + (0.25,0)$};
+
+        \draw[edge] (t21) -- (l31.north); \draw[edge] (t21) -- (l41.north);
+        \draw[edge] (t22) -- (l31.north); \draw[edge] (t22) -- (l42.north);
+        \draw[edge] (t23) -- (l32.north); \draw[edge] (t23) -- (l41.north);
+        \draw[edge] (t24) -- (l32.north); \draw[edge] (t24) -- (l42.north);
+
+        \node at ($(l3) + (0,-1)$) {$\{B,E\}$};
+        \node at ($(l4) + (0,-1)$) {$\{C,G\}$};
+        \node at ($(l1) + (0,-1)$) {$\{A,F\}$};
+        \node at ($(l2) + (0,-1)$) {$\{D\}$};
+      \end{tikzpicture}
+      }}
+    \end{center}
+  \end{minipage}
+\end{vhcenterb}
+
 % Slide: PC - Where are we now?
 
 \newpage
@@ -2252,7 +2663,7 @@ in
   \begin{enumerate}[nosep]
     \item[\llwi] \textcolor{llw}{\textbf{Likelihood weighting (LLW)}},
     \item[\unifi] \textcolor{llw}{\textbf{Uniform weights}},
-    \item[\emi] \textcolor{llw}{\textbf{Expectation Maximization (EM)}},
+    \item[\emi] \textcolor{llw}{\textbf{Expectation-Maximization (EM)}},
     \item[\stacki] \textcolor{llw}{\textbf{Stacking}},
     \item[\bmci] \textcolor{llw}{\textbf{Bayesian Model Combination (BMC)}};
   \end{enumerate}
@@ -2305,7 +2716,7 @@ in
   \begin{enumerate}[nosep]
     \item[\llwi]\textcolor{llw}{\textbf{Likelihood weighting (LLW)}},
     \item[\unifi] \textcolor{llw}{\textbf{Uniform weights}},
-    \item[\emi] \textcolor{llw}{\textbf{Expectation Maximization (EM)}},
+    \item[\emi] \textcolor{llw}{\textbf{Expectation-Maximization (EM)}},
     \item[\stacki] \textcolor{llw}{\textbf{Stacking}},
     \item[\bmci] \textcolor{llw}{\textbf{Bayesian Model Combination (BMC)}};
   \end{enumerate}
@@ -2358,7 +2769,7 @@ in
   \begin{enumerate}[nosep]
     \item[\llwi] \textcolor{llw}{\textbf{Likelihood weighting (LLW)}},
     \item[\unifi] \textcolor{llw}{\textbf{Uniform weights}},
-    \item[\emi] \textcolor{llw}{\textbf{Expectation Maximization (EM)}},
+    \item[\emi] \textcolor{llw}{\textbf{Expectation-Maximization (EM)}},
     \item[\stacki] \textcolor{llw}{\textbf{Stacking}},
     \item[\bmci] \textcolor{llw}{\textbf{Bayesian Model Combination (BMC)}};
   \end{enumerate}
@@ -2396,156 +2807,6 @@ in
     \includegraphics[width=0.765\textwidth]{figures/all_sushi_time.pdf}
   \end{center}
 \end{minipage}}
-
-% Slide: SamplePSDD - Experiments 4
-\newpage
-
-\newtitle{Experiments}
-
-\begin{center}
-\vskip -0.7cm
-\resizebox{0.4\textwidth}{!}{
-  \begin{minipage}{0.35\textwidth}
-    \begin{align*}
-      \text{What is the impact of }&\text{\colorbox{boxgreen!70}{higher $k$'s} and \colorbox{pyellow}{right-leaning vtrees}}\\
-                         \text{in }&\text{\colorbox{boxblue!70}{log-likelihood} and \colorbox{Red}{\color{white}consistency}}?
-    \end{align*}
-  \end{minipage}
-}
-\vskip 0.25cm
-\begin{center}
-  \includegraphics[width=0.3\textwidth]{figures/vtree_ll_imp_sushi.pdf}
-  \includegraphics[width=0.3\textwidth]{figures/k_ll_imp_sushi.pdf}
-\end{center}
-\vskip -0.5cm
-\resizebox{0.4\textwidth}{!}{
-  \begin{minipage}{0.4\textwidth}
-    \begin{align*}
-      \text{Samples perform }&\text{\colorbox{boxgreen!70}{\textbf{better} with higher $k$'s} and \colorbox{pyellow}{right-leaning vtrees}...}\\
-                   \text{...}&\text{but at a \colorbox{boxorange!70}{\textbf{cost} to complexity}.}
-    \end{align*}
-  \end{minipage}
-}
-\begin{center}
-  \includegraphics[width=0.3\textwidth]{figures/vtree_complexity.pdf}
-  \includegraphics[width=0.3\textwidth]{figures/k_complexity.pdf}
-\end{center}
-\end{center}
-
-% Slide: SamplePSDD - What do we gain from this?
-
-\newpage
-
-\newtitle{What do we gain from this?}
-\vskip 1cm
-
-\begin{minipage}[t]{0.35\textwidth}
-  \begin{vhcenterb}
-    \parbox{0.9\textwidth}{
-    \large
-    {\Large{}\textbf{Available queries:}}
-    \vskip 0.5cm
-
-    \begin{checks}
-      \item[\done] Probability of Evidence;
-      \item[\done] Marginal Probability;
-      \item[\done] Conditional Probability;
-      \item[\done] Most Probable Explanation;
-      \item[\done] Shannon Entropy;
-      \item[\done] Cross Entropy;
-      \item[\done] Kullback-Leibler Divergence;
-      \item[\done] Rényi's Alpha Divergence;
-      \item[\done] Cauchy-Schwarz Divergence;
-      \item[\done] Probability of Logical Events;
-      \item[\done] Mutual Information.
-    \end{checks}
-
-    \vskip 0.25cm
-    {\Large{}\textbf{Support:}}
-    \vskip 0.5cm
-
-    \begin{checks}
-      \item[\done] Defineable as a logic formula;
-      \item[\wontfix] Consistent with a relaxation;
-      \item[\done] Ensembles mitigate relaxation.
-    \end{checks}
-    }
-  \end{vhcenterb}
-\end{minipage}
-\begin{minipage}[t][0.8\textheight]{0.625\textwidth}
-  \begin{vhcenterb}
-    \resizebox{\textwidth}{!}{
-    \begin{tikzpicture}
-      \node (tab) at (-7,-0.5) {
-        \begin{tabular}{|ccc|c|} \hline
-          $A$ & $B$ & $C$ & $p(\set{x})$\\
-          \hline
-          0 & 0 & 0 & 0.1\\
-          0 & 1 & 0 & 0.1\\
-          1 & 0 & 0 & 0.2\\
-          1 & 0 & 1 & 0.6\\
-          \hline
-        \end{tabular}
-      };
-
-      \node at ($(tab) + (0,-2)$) {\small$\phi(A,B,C)=(A\to\neg B)\wedge(C\to A)$};
-
-      \newVtreeNode{v_root}{$(tab) + (0,-3)$}{1};
-      \newVtreeNode[fill=boxorange!80]{v_lr}{$(v_root)+(-0.55, -1.5)$}{$A$};
-      \newVtreeNode{v_rr}{$(v_root)+(0.55,-1.5)$}{2};
-      \newVtreeNode[fill=boxblue!50]{v_lrr}{$(v_root)+(0,-3.0)$}{$B$};
-      \newVtreeNode[fill=boxgoldenrod!70]{v_rrr}{$(v_root)+(1.1, -3.0)$}{$C$};
-      \draw (v_root) -- (v_lr);
-      \draw (v_root) -- (v_rr);
-      \draw (v_rr) -- (v_lrr);
-      \draw (v_rr) -- (v_rrr);
-
-      \newNamedOrNode[fill=boxgreen,inputs=nn]{r}{0,0}{1};
-      \newAndNode[fill=boxpink!80,inputs=nn]{p1}{$(r) + (-0.75,-1.5)$};
-      \newAndNode[fill=boxred,inputs=nn]{p2}{$(r) + (0.75,-1.5)$};
-      \newNamedOrNode[fill=boxolive,inputs=nn]{s1}{$(p1.input 2) + (0,-1.0)$}{2};
-      \newNamedOrNode[fill=boxmunsel,inputs=nn]{s2}{$(p2.input 2) + (2.2,-1.0)$}{2};
-      \newAndNode[inputs=nn]{s1p1}{$(r) + (-1.5,-4.25)$};
-      \newAndNode[inputs=nn]{s2p1}{$(r) + (2.1,-4.5)$};
-      \newAndNode[inputs=nn]{s2p2}{$(r) + (3.9,-4.5)$};
-      \newOrNode[inputs=nn]{s3}{$(r) + (-0.25,-5.5)$};
-
-      \node[fill=boxorange!80,minimum size=17pt,label=center:{$A$}] (p1l) at ($(p1.input 1) + (-0.75,-1.0)$) {};
-      \node[fill=boxorange!80,minimum size=17pt,label=center:{$\neg A$}] (p2l) at ($(p2.input 1) + (0.0,-1.0)$) {};
-      \node[fill=boxblue!50,minimum size=17pt,label=center:{$\neg B$}] (s1p1l) at ($(s1p1.input 1) + (-0.75,-0.75)$) {};
-      \node[fill=boxblue!50,minimum size=17pt,label=center:{$\neg B$}] (s2p1l1) at ($(s2p1.input 1) + (-0.5,-1.0)$) {};
-      \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s2p1l2) at ($(s2p1.input 2) + (0.5,-1.0)$) {};
-      \node[fill=boxblue!50,minimum size=17pt,label=center:{$B$}] (s2p2l1) at ($(s2p2.input 1) + (-0.5,-1.0)$) {};
-      \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s2p2l2) at ($(s2p2.input 2) + (0.5,-1.0)$) {};
-      \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$C$}] (s3l1) at ($(s3.input 1) + (-0.5,-1.0)$) {};
-      \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s3l2) at ($(s3.input 2) + (0.5,-1.0)$) {};
-
-      \draw[edge] (r.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.8$} (p1.east);
-      \draw[edge] (r.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.2$} (p2.east);
-      \draw[edge] (p1.input 1) -- ++(0,-0.4) -| (p1l.north);
-      \draw[edge] (p2.input 1) -- ++(0,-0.4) -| (p2l.north);
-      \draw[edge] (s1p1.input 1) -- ++(0,-0.2) -| (s1p1l.north);
-      \draw[edge] (s2p1.input 1) -- ++(0,-0.4) -| (s2p1l1.north);
-      \draw[edge] (s2p1.input 2) -- ++(0,-0.4) -| (s2p1l2.north);
-      \draw[edge] (s2p2.input 1) -- ++(0,-0.4) -| (s2p2l1.north);
-      \draw[edge] (s2p2.input 2) -- ++(0,-0.4) -| (s2p2l2.north);
-      \draw[edge] (s3.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.75$} (s3l1.north);
-      \draw[edge] (s3.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.25$} (s3l2.north);
-      \draw[edge] (p1.input 2) -- ++(0,-0.4) -| (s1.east);
-      \draw[edge] (p2.input 2) -- ++(0,-0.4) -| (s2.east);
-      \draw[edge] (s1.west) -- ++(0,-0.3) node[below right]{\color{pdgreen}$1.0$} -| (s1p1.east);
-      \draw[edge] (s2.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.5$} (s2p1.east);
-      \draw[edge] (s2.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.5$} (s2p2.east);
-      \draw[edge] (s1p1.input 2) -- ++ (0,-0.2) -| (s3.east);
-
-      \node at ($(p1l) + (-0.75,0)$) {\color{pviolet}$p_1$};
-      \node at ($(s1) + (0.5,0.5)$) {\color{psandy}$s_1$};
-      \node at ($(p2l) + (0.75,0)$) {\color{pviolet}$p_2$};
-      \node at ($(s2) + (0.5,0.5)$) {\color{psandy}$s_2$};
-    \end{tikzpicture}
-    }
-  \end{vhcenterb}
-\end{minipage}
 
 % Slide: A Data Perspective
 
@@ -3059,11 +3320,333 @@ in
   \end{minipage}
 \end{center}
 
-% Slide: Experiments 1
+% Slide: Parameter Optimization
+
+\newpage
+
+\newtitle{Parameter Optimization}
+
+\begin{vhcenterb}
+  \begin{minipage}[t][0.85\textheight][t]{0.4\textwidth}
+    \vskip 1.5cm
+    {\LARGE\textbf{Expectation-Maximization (EM)}}
+    \vskip 1cm
+    \Large
+    \begin{itemize}
+      \item Minibatch EM
+        \begin{equation*}
+          w_{\textcolor{boxpink}{\set{B}}}\propto\sum_{\set{x}\in\set{M}}
+            \frac{1}{p_{\textcolor{boxgreen}{\set{A}}}(\set{x})}\cdot
+            \frac{\partial p_{\textcolor{boxgreen}{\set{A}}}(\set{x})}
+            {\partial p_{\textcolor{boxpink}{\set{B}}}(\set{x})}\cdot
+            p_{\textcolor{boxblue}{\set{C}}}\cdot w_{\textcolor{boxpink}{\set{B}}}
+        \end{equation*}
+      \item Full EM
+        \begin{equation*}
+          w_{\textcolor{boxpink}{\set{B}}}\propto\sum_{\set{x}\in\set{D}}
+            \frac{1}{p_{\textcolor{boxgreen}{\set{A}}}(\set{x})}\cdot
+            \frac{\partial p_{\textcolor{boxgreen}{\set{A}}}(\set{x})}
+            {\partial p_{\textcolor{boxpink}{\set{B}}}(\set{x})}\cdot
+            p_{\textcolor{boxblue}{\set{C}}}\cdot w_{\textcolor{boxpink}{\set{B}}}
+        \end{equation*}
+    \end{itemize}
+
+    \vskip 1cm
+    \begin{description}
+      \item[\textproc{LearnRP}-100:] \textproc{LearnRP} + 100 itrs of minibatch
+      \item[\textproc{LearnRP}-F:] \textproc{LearnRP}-100 + 30 itrs of full
+    \end{description}
+  \end{minipage}
+  \begin{minipage}[t][0.85\textheight][t]{0.55\textwidth}
+    \begin{vhcenterb}
+      \resizebox{!}{0.5\textwidth}{
+        \begin{tikzpicture}
+          % PC
+          \newSumNode[fill=boxgreen,label=above left:{\color{boxgreen}$\set{A}$}]{r}{0,0};
+          \newProdNode[fill=boxblue]{p1}{$(r) + (-1,-1)$};
+          \newProdNode[fill=boxred]{p2}{$(r) + (1,-1)$};
+          \newSumNode[fill=boxpink,label=above left:{\color{boxpink}$\set{B}$}]{b1}{$(p1) + (-1,-1)$};
+          \newGaussNode[fill=boxorange]{b2}{$(p1) + (1,-1)$};
+          \newProdNode[fill=boxblue,label=above left:{$\color{boxblue}\set{C}$}]{q1}{$(b1) + (-1,-1)$};
+          \newProdNode[fill=boxred]{q2}{$(b1) + (1,-1)$};
+          \node at ($(q1) + (0,-0.5)$) {$\vdots$};
+          \node at ($(q2) + (0,-0.5)$) {$\vdots$};
+          \node at ($(p2) + (0,-0.5)$) {$\vdots$};
+          \draw[edge] (r) -- node[pos=0.5,above left] {$w_{\textcolor{boxgreen}{\set{A}}}$} (p1);
+          \draw[edge] (r) -- node[pos=0.5,above right] {$1-w_{\textcolor{boxgreen}{\set{A}}}$} (p2);
+          \draw[edge] (p1) -- (b1);
+          \draw[edge] (p1) -- (b2);
+          \draw[edge] (b1) -- node[pos=0.5,above left] {$w_{\textcolor{boxpink}{\set{B}}}$} (q1);
+          \draw[edge] (b1) -- node[pos=0.5,above right] {$1-w_{\textcolor{boxpink}{\set{B}}}$} (q2);
+        \end{tikzpicture}
+      }
+    \end{vhcenterb}
+  \end{minipage}
+\end{vhcenterb}
+
+{\color{boxdgray}\cite{dempster77,liu21}}
+
+% Slide: LearnRP - Experiments 2
 
 \newpage
 
 \newtitle{Experiments}
+
+\begin{vhcenterb}
+  \resizebox{0.9\textwidth}{!}{
+  \begin{tabular}{c|ccccc|cc}
+    \hline
+    \textbf{Dataset} & \textbf{\textproc{LearnSPN}} & \textbf{\textproc{Strudel}} &
+    \textbf{\textproc{LearnPSDD}} & \textbf{\textproc{XPC}} & \textbf{\textproc{Prometheus}} &
+    \textbf{\textproc{LearnRP}-F} & \textbf{\textproc{LearnRP}-100}\\
+    \hline
+    \textsc{accidents } & -30.03 & $|$-28.73$|$ & -30.16 & -31.02 & \textbf{-27.91} & \underline{-28.65} & -28.87\\
+    \textsc{ad        } & -19.73 & \underline{-16.38} & -31.78 & \textbf{-15.50} & -23.96 & $|$-19.20$|$ & -20.32\\
+    \textsc{audio     } & -40.50 & -41.50 & \underline{-39.94} & -40.91 & \textbf{-39.80} & $|$-40.18$|$ & -40.23\\
+    \textsc{bbc       } & $|$-250.68$|$ & -254.41 & -253.19 & \textbf{-248.34} & \underline{-248.50} & -254.97 & -255.55\\
+    \textsc{netflix   } & $|$-57.02$|$ & -58.69 & \textbf{-55.71} & -57.58 & \underline{-56.47} & -57.07 & -57.05\\
+    \textsc{book      } & -35.88 & -34.99 & -34.97 & -34.75 & $|$-34.40$|$ & \underline{-33.57} & \textbf{-33.52}\\
+    \textsc{20-newsgrp} & -155.92 & -154.47 & -155.97 & $|$-153.75$|$ & -154.17 & \underline{-152.78} & \textbf{-152.76}\\
+    \textsc{reuters-52} & $|$-85.06$|$ & -86.22 & -89.61 & \underline{-84.70} & \textbf{-84.59} & -85.73 & -85.47\\
+    \textsc{webkb     } & -158.20 & -155.33 & -161.09 & \underline{-153.67} & -155.21 & $|$-154.43$|$ & \textbf{-152.60}\\
+    \textsc{dna       } & \textbf{-82.52} & -86.22 & -88.01 & -86.61 & -84.45 & \underline{-83.03} & $|$-83.85$|$\\
+    \textsc{jester    } & -75.98 & -55.03 & \textbf{-51.29} & -53.43 & \underline{-52.80} & -52.92 & $|$-52.89$|$\\
+    \textsc{kdd       } & -2.18 & $|$-2.13$|$ & \textbf{-2.11} & -2.15 & \underline{-2.12} & $|$-2.13$|$ & -2.14\\
+    \textsc{kosarek   } & -10.98 & -10.68 & \textbf{-10.52} & -10.77 & \underline{-10.59} & $|$-10.65$|$ & -10.67\\
+    \textsc{msnbc     } & \underline{-6.11} & \textbf{-6.04} & \textbf{-6.04} & $|$-6.18$|$ & \textbf{-6.04} & -6.31 & -6.36\\
+    \textsc{msweb     } & -10.25 & \textbf{-9.71} & -9.89 & -9.93 & $|$-9.86$|$ & \underline{-9.85} & -9.97\\
+    \textsc{nltcs     } & -6.11 & -6.06 & \textbf{-5.99} & $|$-6.05$|$ & \underline{-6.01} & -6.35 & -6.23\\
+    \textsc{plants    } & \underline{-12.97} & $|$-12.98$|$ & -13.02 & -14.19 & \textbf{-12.81} & -13.68 & -14.00\\
+    \textsc{pumsb-star} & $|$-24.78$|$ & \underline{-24.12} & -26.12 & -26.06 & \textbf{-22.75} & -25.88 & -26.19\\
+    \textsc{eachmovie } & -52.48 & -53.67 & -58.01 & -54.82 & $|$-51.49$|$ & \underline{-51.37} & \textbf{-51.06}\\
+    \textsc{retail    } & -11.04 & \underline{-10.81} & \textbf{-10.72} & -10.94 & -10.87 & $|$-10.85$|$ & -10.86\\
+    \hline
+    \textbf{Avg. Rank} & 4.80 $\pm$ 1.91 & 4.22 $\pm$ 1.81 & $|$4.05 $\pm$ 2.56$|$ & 4.60 $\pm$ 1.93 & \textbf{2.55} $\bm{\pm}$ \textbf{1.43} & \underline{3.62 $\pm$ 1.56} & 4.15 $\pm$ 2.03 \\
+    \hline
+    \textbf{Pos. (mean)} & 7th & 5th & $|$3rd$|$ & 6th & \textbf{1st} & \underline{2nd} & 4th \\
+    \hline
+  \end{tabular}
+  }
+\end{vhcenterb}
+
+{\color{boxdgray}\cite{gens13,dang20,liang17,dimauro21,jaini18a}}
+
+% Slide: LearnRP - Experiments 3
+
+\newpage
+
+\newtitle{Experiments}
+
+\begin{vhcenterb}
+  \def\svgwidth{\textwidth}\resizebox{!}{0.9\textheight}{\input{figures/time.pdf_tex}}
+\end{vhcenterb}
+
+% Slide: LearnRP - Experiments 4
+
+\newpage
+
+\newtitle{Experiments}
+
+\begin{vhcenterb}
+  \def\svgwidth{\textwidth}\resizebox{!}{0.9\textheight}{\input{figures/time_log.pdf_tex}}
+\end{vhcenterb}
+
+% Slide: LearnRP - Experiments 7
+
+\newpage
+
+\newtitle{Experiments}
+
+\begin{vhcenterb}
+  \resizebox{0.9\textwidth}{!}{
+    \begin{tabular}{cc|ccccccc|cc}
+      \hline
+      \textbf{Dataset} & \textbf{Vars} & \textbf{SRBMs} & \textbf{oSLRAU} & \textbf{GBMMs} & \textbf{iGMMs} &
+      \textbf{GMMs} & \textbf{\textproc{Prometheus}} & \textbf{iSPTs} & \textbf{\textproc{LearnRP}} &
+      \textbf{Size} \\
+      \hline
+      \textsc{abalone}    & 8  & -2.28  & $|$-0.94$|$  & -1.17  & ---   & \textbf{-0.59}   & \underline{-0.85}   & ---   & -6.13  & 317   \\
+      \textsc{ca}         & 22 & -4.95  & \underline{21.19}  & $|$3.42$|$   & ---   & -1.08   & \textbf{27.82}   & ---   & -5.84  & 2765  \\
+      \textsc{quake}      & 4  & -2.38  & \underline{-1.21}  & -3.76  & ---   & \textbf{-0.58}   & $|$-1.50$|$   & ---   & -3.76  & 79    \\
+      \textsc{sensorless} & 48 & -26.91 & \underline{60.72}  & $|$8.56$|$   & ---   & -1.39   & \textbf{62.03}   & ---   & -38.46 & 12589 \\
+      \textsc{banknote}   & 4  & -2.76  & \underline{-1.39}  & -4.64  & ---   & \textbf{-1.05}   & $|$-1.96$|$   & ---   & -6.06  & 79    \\
+      \textsc{flowsize}   & 3  & -0.79  & \underline{15.32}  & $|$5.72$|$   & ---   & -36.50  & \textbf{18.03}   & ---   & 2.20   & 49    \\
+      \textsc{kinematics} & 8  & \textbf{-5.55}  & -11.13 & -11.20 & ---   & \underline{-6.11}   & -11.12  & ---   & $|$-11.02$|$ & 319   \\
+      \textsc{iris}       & 4  & ---    & ---    & ---    & -3.94 & \textbf{0.20}    & \underline{-1.06}   & -3.74 & $|$-3.47$|$  & 79    \\
+      \textsc{oldfaith}   & 2  & ---    & ---    & ---    & $|$-1.73$|$ & -2.09   & \textbf{-1.48}   & \underline{-1.70} & -4.33  & 19    \\
+      \textsc{chemdiabet} & 3  & ---    & ---    & ---    & -3.02 & \textbf{-0.58}   & \underline{-2.59}   & $|$-2.88$|$ & -18.68 & 48    \\
+      \hline
+    \end{tabular}
+  }
+\end{vhcenterb}
+
+{\color{boxdgray}\cite{jaini18a,salakhutdinov09,rasmussen00,jaini18b,hsu17,trapp16,dua17,guvenir00}}
+
+% Slide: Supplemental Material
+
+\newpage
+
+\begin{vhcenterb}
+  \resizebox{!}{3em}{
+    \color{boxblue}Supplemental Material
+  }
+\end{vhcenterb}
+
+% Slide: SamplePSDD - Experiments 4
+\newpage
+
+\newtitle{\textproc{SamplePSDD} -- Experiments}
+
+\begin{center}
+\vskip -0.7cm
+\resizebox{0.4\textwidth}{!}{
+  \begin{minipage}{0.35\textwidth}
+    \begin{align*}
+      \text{What is the impact of }&\text{\colorbox{boxgreen!70}{higher $k$'s} and \colorbox{pyellow}{right-leaning vtrees}}\\
+                         \text{in }&\text{\colorbox{boxblue!70}{log-likelihood} and \colorbox{Red}{\color{white}consistency}}?
+    \end{align*}
+  \end{minipage}
+}
+\vskip 0.25cm
+\begin{center}
+  \includegraphics[width=0.3\textwidth]{figures/vtree_ll_imp_sushi.pdf}
+  \includegraphics[width=0.3\textwidth]{figures/k_ll_imp_sushi.pdf}
+\end{center}
+\vskip -0.5cm
+\resizebox{0.4\textwidth}{!}{
+  \begin{minipage}{0.4\textwidth}
+    \begin{align*}
+      \text{Samples perform }&\text{\colorbox{boxgreen!70}{\textbf{better} with higher $k$'s} and \colorbox{pyellow}{right-leaning vtrees}...}\\
+                   \text{...}&\text{but at a \colorbox{boxorange!70}{\textbf{cost} to complexity}.}
+    \end{align*}
+  \end{minipage}
+}
+\begin{center}
+  \includegraphics[width=0.3\textwidth]{figures/vtree_complexity.pdf}
+  \includegraphics[width=0.3\textwidth]{figures/k_complexity.pdf}
+\end{center}
+\end{center}
+
+% Slide: SamplePSDD - What do we gain from this?
+
+\newpage
+
+\newtitle{\textproc{SamplePSDD} -- What do we gain from this?}
+\vskip 1cm
+
+\begin{minipage}[t]{0.35\textwidth}
+  \begin{vhcenterb}
+    \parbox{0.9\textwidth}{
+    \large
+    {\Large{}\textbf{Available queries:}}
+    \vskip 0.5cm
+
+    \begin{checks}
+      \item[\done] Probability of Evidence;
+      \item[\done] Marginal Probability;
+      \item[\done] Conditional Probability;
+      \item[\done] Most Probable Explanation;
+      \item[\done] Shannon Entropy;
+      \item[\done] Cross Entropy;
+      \item[\done] Kullback-Leibler Divergence;
+      \item[\done] Rényi's Alpha Divergence;
+      \item[\done] Cauchy-Schwarz Divergence;
+      \item[\done] Probability of Logical Events;
+      \item[\done] Mutual Information.
+    \end{checks}
+
+    \vskip 0.25cm
+    {\Large{}\textbf{Support:}}
+    \vskip 0.5cm
+
+    \begin{checks}
+      \item[\done] Defineable as a logic formula;
+      \item[\wontfix] Consistent with a relaxation;
+      \item[\done] Ensembles mitigate relaxation.
+    \end{checks}
+    }
+  \end{vhcenterb}
+\end{minipage}
+\begin{minipage}[t][0.8\textheight]{0.625\textwidth}
+  \begin{vhcenterb}
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}
+      \node (tab) at (-7,-0.5) {
+        \begin{tabular}{|ccc|c|} \hline
+          $A$ & $B$ & $C$ & $p(\set{x})$\\
+          \hline
+          0 & 0 & 0 & 0.1\\
+          0 & 1 & 0 & 0.1\\
+          1 & 0 & 0 & 0.2\\
+          1 & 0 & 1 & 0.6\\
+          \hline
+        \end{tabular}
+      };
+
+      \node at ($(tab) + (0,-2)$) {\small$\phi(A,B,C)=(A\to\neg B)\wedge(C\to A)$};
+
+      \newVtreeNode{v_root}{$(tab) + (0,-3)$}{1};
+      \newVtreeNode[fill=boxorange!80]{v_lr}{$(v_root)+(-0.55, -1.5)$}{$A$};
+      \newVtreeNode{v_rr}{$(v_root)+(0.55,-1.5)$}{2};
+      \newVtreeNode[fill=boxblue!50]{v_lrr}{$(v_root)+(0,-3.0)$}{$B$};
+      \newVtreeNode[fill=boxgoldenrod!70]{v_rrr}{$(v_root)+(1.1, -3.0)$}{$C$};
+      \draw (v_root) -- (v_lr);
+      \draw (v_root) -- (v_rr);
+      \draw (v_rr) -- (v_lrr);
+      \draw (v_rr) -- (v_rrr);
+
+      \newNamedOrNode[fill=boxgreen,inputs=nn]{r}{0,0}{1};
+      \newAndNode[fill=boxpink!80,inputs=nn]{p1}{$(r) + (-0.75,-1.5)$};
+      \newAndNode[fill=boxred,inputs=nn]{p2}{$(r) + (0.75,-1.5)$};
+      \newNamedOrNode[fill=boxolive,inputs=nn]{s1}{$(p1.input 2) + (0,-1.0)$}{2};
+      \newNamedOrNode[fill=boxmunsel,inputs=nn]{s2}{$(p2.input 2) + (2.2,-1.0)$}{2};
+      \newAndNode[inputs=nn]{s1p1}{$(r) + (-1.5,-4.25)$};
+      \newAndNode[inputs=nn]{s2p1}{$(r) + (2.1,-4.5)$};
+      \newAndNode[inputs=nn]{s2p2}{$(r) + (3.9,-4.5)$};
+      \newOrNode[inputs=nn]{s3}{$(r) + (-0.25,-5.5)$};
+
+      \node[fill=boxorange!80,minimum size=17pt,label=center:{$A$}] (p1l) at ($(p1.input 1) + (-0.75,-1.0)$) {};
+      \node[fill=boxorange!80,minimum size=17pt,label=center:{$\neg A$}] (p2l) at ($(p2.input 1) + (0.0,-1.0)$) {};
+      \node[fill=boxblue!50,minimum size=17pt,label=center:{$\neg B$}] (s1p1l) at ($(s1p1.input 1) + (-0.75,-0.75)$) {};
+      \node[fill=boxblue!50,minimum size=17pt,label=center:{$\neg B$}] (s2p1l1) at ($(s2p1.input 1) + (-0.5,-1.0)$) {};
+      \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s2p1l2) at ($(s2p1.input 2) + (0.5,-1.0)$) {};
+      \node[fill=boxblue!50,minimum size=17pt,label=center:{$B$}] (s2p2l1) at ($(s2p2.input 1) + (-0.5,-1.0)$) {};
+      \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s2p2l2) at ($(s2p2.input 2) + (0.5,-1.0)$) {};
+      \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$C$}] (s3l1) at ($(s3.input 1) + (-0.5,-1.0)$) {};
+      \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s3l2) at ($(s3.input 2) + (0.5,-1.0)$) {};
+
+      \draw[edge] (r.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.8$} (p1.east);
+      \draw[edge] (r.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.2$} (p2.east);
+      \draw[edge] (p1.input 1) -- ++(0,-0.4) -| (p1l.north);
+      \draw[edge] (p2.input 1) -- ++(0,-0.4) -| (p2l.north);
+      \draw[edge] (s1p1.input 1) -- ++(0,-0.2) -| (s1p1l.north);
+      \draw[edge] (s2p1.input 1) -- ++(0,-0.4) -| (s2p1l1.north);
+      \draw[edge] (s2p1.input 2) -- ++(0,-0.4) -| (s2p1l2.north);
+      \draw[edge] (s2p2.input 1) -- ++(0,-0.4) -| (s2p2l1.north);
+      \draw[edge] (s2p2.input 2) -- ++(0,-0.4) -| (s2p2l2.north);
+      \draw[edge] (s3.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.75$} (s3l1.north);
+      \draw[edge] (s3.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.25$} (s3l2.north);
+      \draw[edge] (p1.input 2) -- ++(0,-0.4) -| (s1.east);
+      \draw[edge] (p2.input 2) -- ++(0,-0.4) -| (s2.east);
+      \draw[edge] (s1.west) -- ++(0,-0.3) node[below right]{\color{pdgreen}$1.0$} -| (s1p1.east);
+      \draw[edge] (s2.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.5$} (s2p1.east);
+      \draw[edge] (s2.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.5$} (s2p2.east);
+      \draw[edge] (s1p1.input 2) -- ++ (0,-0.2) -| (s3.east);
+
+      \node at ($(p1l) + (-0.75,0)$) {\color{pviolet}$p_1$};
+      \node at ($(s1) + (0.5,0.5)$) {\color{psandy}$s_1$};
+      \node at ($(p2l) + (0.75,0)$) {\color{pviolet}$p_2$};
+      \node at ($(s2) + (0.5,0.5)$) {\color{psandy}$s_2$};
+    \end{tikzpicture}
+    }
+  \end{vhcenterb}
+\end{minipage}
+
+% Slide: LearnRP - Datasets
+
+\newpage
+
+\newtitle{\textproc{LearnRP} -- Datasets}
 
 \begin{vhcenterb}
   \resizebox{0.9\textwidth}{!}{
@@ -3092,11 +3675,13 @@ in
   }
 \end{vhcenterb}
 
-% Slide: Experiments 2
+{\color{boxdgray}\cite{lowd10,haaren12}}
+
+% Slide: LearnRP -- Binary Benchmark
 
 \newpage
 
-\newtitle{Experiments}
+\newtitle{\textproc{LearnRP} -- Binary Benchmark}
 
 \begin{vhcenterb}
   \resizebox{0.9\textwidth}{!}{
@@ -3138,80 +3723,33 @@ in
   }
 \end{vhcenterb}
 
-% Slide: Experiments 3
+{\color{boxdgray}\cite{gens13,dang20,liang17,dimauro21,jaini18a}}
+
+% Slide: LearnRP - Experiments 5
 
 \newpage
 
-\newtitle{Experiments}
-
-\begin{vhcenterb}
-  \def\svgwidth{\textwidth}\resizebox{!}{0.9\textheight}{\input{figures/time.pdf_tex}}
-\end{vhcenterb}
-
-% Slide: Experiments 4
-
-\newpage
-
-\newtitle{Experiments}
-
-\begin{vhcenterb}
-  \def\svgwidth{\textwidth}\resizebox{!}{0.9\textheight}{\input{figures/time_log.pdf_tex}}
-\end{vhcenterb}
-
-% Slide: Experiments 5
-
-\newpage
-
-\newtitle{Experiments}
+\newtitle{\textproc{LearnRP} -- Learning Curves}
 
 \begin{vhcenterb}
   \includegraphics[height=0.9\textheight]{figures/all_slides.pdf}
 \end{vhcenterb}
 
-% Slide: Experiments 6
+% Slide: LearnRP - Experiments 6
 
 \newpage
 
-\newtitle{Experiments}
+\newtitle{\textproc{LearnRP} -- Random Initializations}
 
 \begin{vhcenterb}
   \includegraphics[height=0.9\textheight]{figures/all_rand_slides.pdf}
-\end{vhcenterb}
-
-% Slide: Experiments 7
-
-\newpage
-
-\newtitle{Experiments}
-
-\begin{vhcenterb}
-  \resizebox{0.9\textwidth}{!}{
-    \begin{tabular}{cc|ccccccc|cc}
-      \hline
-      \textbf{Dataset} & \textbf{Vars} & \textbf{SRBMs} & \textbf{oSLRAU} & \textbf{GBMMs} & \textbf{iGMMs} &
-      \textbf{GMMs} & \textbf{\textproc{Prometheus}} & \textbf{iSPTs} & \textbf{\textproc{LearnRP}} &
-      \textbf{Size} \\
-      \hline
-      \textsc{abalone}    & 8  & -2.28  & $|$-0.94$|$  & -1.17  & ---   & \textbf{-0.59}   & \underline{-0.85}   & ---   & -6.13  & 317   \\
-      \textsc{ca}         & 22 & -4.95  & \underline{21.19}  & $|$3.42$|$   & ---   & -1.08   & \textbf{27.82}   & ---   & -5.84  & 2765  \\
-      \textsc{quake}      & 4  & -2.38  & \underline{-1.21}  & -3.76  & ---   & \textbf{-0.58}   & $|$-1.50$|$   & ---   & -3.76  & 79    \\
-      \textsc{sensorless} & 48 & -26.91 & \underline{60.72}  & $|$8.56$|$   & ---   & -1.39   & \textbf{62.03}   & ---   & -38.46 & 12589 \\
-      \textsc{banknote}   & 4  & -2.76  & \underline{-1.39}  & -4.64  & ---   & \textbf{-1.05}   & $|$-1.96$|$   & ---   & -6.06  & 79    \\
-      \textsc{flowsize}   & 3  & -0.79  & \underline{15.32}  & $|$5.72$|$   & ---   & -36.50  & \textbf{18.03}   & ---   & 2.20   & 49    \\
-      \textsc{kinematics} & 8  & \textbf{-5.55}  & -11.13 & -11.20 & ---   & \underline{-6.11}   & -11.12  & ---   & $|$-11.02$|$ & 319   \\
-      \textsc{iris}       & 4  & ---    & ---    & ---    & -3.94 & \textbf{0.20}    & \underline{-1.06}   & -3.74 & $|$-3.47$|$  & 79    \\
-      \textsc{oldfaith}   & 2  & ---    & ---    & ---    & $|$-1.73$|$ & -2.09   & \textbf{-1.48}   & \underline{-1.70} & -4.33  & 19    \\
-      \textsc{chemdiabet} & 3  & ---    & ---    & ---    & -3.02 & \textbf{-0.58}   & \underline{-2.59}   & $|$-2.88$|$ & -18.68 & 48    \\
-      \hline
-    \end{tabular}
-  }
 \end{vhcenterb}
 
 % Slide: LearnRP - What do we gain from this?
 
 \newpage
 
-\newtitle{What do we gain from this?}
+\newtitle{\textproc{LearnRP} -- What do we gain from this?}
 \vskip 1cm
 
 \begin{center}
