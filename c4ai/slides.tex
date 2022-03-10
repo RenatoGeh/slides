@@ -3482,6 +3482,407 @@ in
 
 {\color{boxdgray}\cite{jaini18a,salakhutdinov09,rasmussen00,jaini18b,hsu17,trapp16,dua17,guvenir00}}
 
+% Slide: Conclusion
+
+\newpage
+
+\newtitle{In summary}
+
+\begin{vhcenterb}
+  \resizebox{0.9\textwidth}{!}{
+  \begin{tikzpicture}
+    \node (tab) at (-7,-0.5) {
+      \begin{tabular}{|ccc|c|} \hline
+        $A$ & $B$ & $C$ & $p(\set{x})$\\
+        \hline
+        0 & 0 & 0 & 0.1\\
+        0 & 1 & 0 & 0.1\\
+        1 & 0 & 0 & 0.2\\
+        1 & 0 & 1 & 0.6\\
+        \hline
+      \end{tabular}
+    };
+
+    \node at ($(tab) + (0,-2)$) {\small$\phi(A,B,C)=(A\to\neg B)\wedge(C\to A)$};
+
+    \newVtreeNode{v_root}{$(tab) + (0,-3)$}{1};
+    \newVtreeNode[fill=boxorange!80]{v_lr}{$(v_root)+(-0.55, -1.5)$}{$A$};
+    \newVtreeNode{v_rr}{$(v_root)+(0.55,-1.5)$}{2};
+    \newVtreeNode[fill=boxblue!50]{v_lrr}{$(v_root)+(0,-3.0)$}{$B$};
+    \newVtreeNode[fill=boxgoldenrod!70]{v_rrr}{$(v_root)+(1.1, -3.0)$}{$C$};
+    \draw (v_root) -- (v_lr);
+    \draw (v_root) -- (v_rr);
+    \draw (v_rr) -- (v_lrr);
+    \draw (v_rr) -- (v_rrr);
+
+    \newNamedOrNode[fill=boxgreen,inputs=nn]{r}{0,0}{1};
+    \newAndNode[fill=boxpink!80,inputs=nn]{p1}{$(r) + (-0.75,-1.5)$};
+    \newAndNode[fill=boxred,inputs=nn]{p2}{$(r) + (0.75,-1.5)$};
+    \newNamedOrNode[fill=boxolive,inputs=nn]{s1}{$(p1.input 2) + (0,-1.0)$}{2};
+    \newNamedOrNode[fill=boxmunsel,inputs=nn]{s2}{$(p2.input 2) + (2.2,-1.0)$}{2};
+    \newAndNode[inputs=nn]{s1p1}{$(r) + (-1.5,-4.25)$};
+    \newAndNode[inputs=nn]{s2p1}{$(r) + (2.1,-4.5)$};
+    \newAndNode[inputs=nn]{s2p2}{$(r) + (3.9,-4.5)$};
+    \newOrNode[inputs=nn]{s3}{$(r) + (-0.25,-5.5)$};
+
+    \node[fill=boxorange!80,minimum size=17pt,label=center:{$A$}] (p1l) at ($(p1.input 1) + (-0.75,-1.0)$) {};
+    \node[fill=boxorange!80,minimum size=17pt,label=center:{$\neg A$}] (p2l) at ($(p2.input 1) + (0.0,-1.0)$) {};
+    \node[fill=boxblue!50,minimum size=17pt,label=center:{$\neg B$}] (s1p1l) at ($(s1p1.input 1) + (-0.75,-0.75)$) {};
+    \node[fill=boxblue!50,minimum size=17pt,label=center:{$\neg B$}] (s2p1l1) at ($(s2p1.input 1) + (-0.5,-1.0)$) {};
+    \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s2p1l2) at ($(s2p1.input 2) + (0.5,-1.0)$) {};
+    \node[fill=boxblue!50,minimum size=17pt,label=center:{$B$}] (s2p2l1) at ($(s2p2.input 1) + (-0.5,-1.0)$) {};
+    \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s2p2l2) at ($(s2p2.input 2) + (0.5,-1.0)$) {};
+    \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$C$}] (s3l1) at ($(s3.input 1) + (-0.5,-1.0)$) {};
+    \node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s3l2) at ($(s3.input 2) + (0.5,-1.0)$) {};
+
+    \draw[edge] (r.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.8$} (p1.east);
+    \draw[edge] (r.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.2$} (p2.east);
+    \draw[edge] (p1.input 1) -- ++(0,-0.4) -| (p1l.north);
+    \draw[edge] (p2.input 1) -- ++(0,-0.4) -| (p2l.north);
+    \draw[edge] (s1p1.input 1) -- ++(0,-0.2) -| (s1p1l.north);
+    \draw[edge] (s2p1.input 1) -- ++(0,-0.4) -| (s2p1l1.north);
+    \draw[edge] (s2p1.input 2) -- ++(0,-0.4) -| (s2p1l2.north);
+    \draw[edge] (s2p2.input 1) -- ++(0,-0.4) -| (s2p2l1.north);
+    \draw[edge] (s2p2.input 2) -- ++(0,-0.4) -| (s2p2l2.north);
+    \draw[edge] (s3.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.75$} (s3l1.north);
+    \draw[edge] (s3.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.25$} (s3l2.north);
+    \draw[edge] (p1.input 2) -- ++(0,-0.4) -| (s1.east);
+    \draw[edge] (p2.input 2) -- ++(0,-0.4) -| (s2.east);
+    \draw[edge] (s1.west) -- ++(0,-0.3) node[below right]{\color{pdgreen}$1.0$} -| (s1p1.east);
+    \draw[edge] (s2.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.5$} (s2p1.east);
+    \draw[edge] (s2.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.5$} (s2p2.east);
+    \draw[edge] (s1p1.input 2) -- ++ (0,-0.2) -| (s3.east);
+
+    \node at ($(p1l) + (-0.75,0)$) {\color{pviolet}$p_1$};
+    \node at ($(s1) + (0.5,0.5)$) {\color{psandy}$s_1$};
+    \node at ($(p2l) + (0.75,0)$) {\color{pviolet}$p_2$};
+    \node at ($(s2) + (0.5,0.5)$) {\color{psandy}$s_2$};
+  \end{tikzpicture}
+  }
+\end{vhcenterb}
+
+\newpage
+
+\newtitle{In summary}
+
+%\begin{vhcenterb}
+  %\begin{minipage}{0.45\textwidth}
+    %{\Large\textbf{From a logical point of view:}}
+    %\large
+    %\vskip 0.5cm
+    %We presented a powerful data analysis model which...
+    %\begin{checks}
+      %\item[\done] ...is fast to learn;
+      %\item[\done] ...allows embeddable knowledge;
+      %\item[\done] ...scales to large data;
+      %\item[\done] ...is competitive against SOTA.
+    %\end{checks}
+    %\vskip 1cm
+
+    %{\Large\textbf{From a data guided point of view:}}
+    %\large
+    %\vskip 0.5cm
+    %We define a interpretable model which...
+    %\begin{checks}
+      %\item[\done] ...is fast to learn;
+      %\item[\done] ...is somewhat interpretable;
+      %\item[\done] ...scales to large data;
+      %\item[\done] ...is competitive against SOTA.
+    %\end{checks}
+  %\end{minipage}
+  %\begin{minipage}{0.45\textwidth}
+    %\begin{tikzpicture}
+      %\node (tab) at (-7,-0.5) {
+        %\begin{tabular}{|ccc|c|} \hline
+          %$A$ & $B$ & $C$ & $p(\set{x})$\\
+          %\hline
+          %0 & 0 & 0 & 0.1\\
+          %0 & 1 & 0 & 0.1\\
+          %1 & 0 & 0 & 0.2\\
+          %1 & 0 & 1 & 0.6\\
+          %\hline
+        %\end{tabular}
+      %};
+
+      %\node at ($(tab) + (0,-2)$) {\small$\phi(A,B,C)=(A\to\neg B)\wedge(C\to A)$};
+
+      %\newVtreeNode{v_root}{$(tab) + (0,-3)$}{1};
+      %\newVtreeNode[fill=boxorange!80]{v_lr}{$(v_root)+(-0.55, -1.5)$}{$A$};
+      %\newVtreeNode{v_rr}{$(v_root)+(0.55,-1.5)$}{2};
+      %\newVtreeNode[fill=boxblue!50]{v_lrr}{$(v_root)+(0,-3.0)$}{$B$};
+      %\newVtreeNode[fill=boxgoldenrod!70]{v_rrr}{$(v_root)+(1.1, -3.0)$}{$C$};
+      %\draw (v_root) -- (v_lr);
+      %\draw (v_root) -- (v_rr);
+      %\draw (v_rr) -- (v_lrr);
+      %\draw (v_rr) -- (v_rrr);
+
+      %\newNamedOrNode[fill=boxgreen,inputs=nn]{r}{0,0}{1};
+      %\newAndNode[fill=boxpink!80,inputs=nn]{p1}{$(r) + (-0.75,-1.5)$};
+      %\newAndNode[fill=boxred,inputs=nn]{p2}{$(r) + (0.75,-1.5)$};
+      %\newNamedOrNode[fill=boxolive,inputs=nn]{s1}{$(p1.input 2) + (0,-1.0)$}{2};
+      %\newNamedOrNode[fill=boxmunsel,inputs=nn]{s2}{$(p2.input 2) + (2.2,-1.0)$}{2};
+      %\newAndNode[inputs=nn]{s1p1}{$(r) + (-1.5,-4.25)$};
+      %\newAndNode[inputs=nn]{s2p1}{$(r) + (2.1,-4.5)$};
+      %\newAndNode[inputs=nn]{s2p2}{$(r) + (3.9,-4.5)$};
+      %\newOrNode[inputs=nn]{s3}{$(r) + (-0.25,-5.5)$};
+
+      %\node[fill=boxorange!80,minimum size=17pt,label=center:{$A$}] (p1l) at ($(p1.input 1) + (-0.75,-1.0)$) {};
+      %\node[fill=boxorange!80,minimum size=17pt,label=center:{$\neg A$}] (p2l) at ($(p2.input 1) + (0.0,-1.0)$) {};
+      %\node[fill=boxblue!50,minimum size=17pt,label=center:{$\neg B$}] (s1p1l) at ($(s1p1.input 1) + (-0.75,-0.75)$) {};
+      %\node[fill=boxblue!50,minimum size=17pt,label=center:{$\neg B$}] (s2p1l1) at ($(s2p1.input 1) + (-0.5,-1.0)$) {};
+      %\node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s2p1l2) at ($(s2p1.input 2) + (0.5,-1.0)$) {};
+      %\node[fill=boxblue!50,minimum size=17pt,label=center:{$B$}] (s2p2l1) at ($(s2p2.input 1) + (-0.5,-1.0)$) {};
+      %\node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s2p2l2) at ($(s2p2.input 2) + (0.5,-1.0)$) {};
+      %\node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$C$}] (s3l1) at ($(s3.input 1) + (-0.5,-1.0)$) {};
+      %\node[fill=boxgoldenrod!70,minimum size=17pt,label=center:{$\neg C$}] (s3l2) at ($(s3.input 2) + (0.5,-1.0)$) {};
+
+      %\draw[edge] (r.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.8$} (p1.east);
+      %\draw[edge] (r.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.2$} (p2.east);
+      %\draw[edge] (p1.input 1) -- ++(0,-0.4) -| (p1l.north);
+      %\draw[edge] (p2.input 1) -- ++(0,-0.4) -| (p2l.north);
+      %\draw[edge] (s1p1.input 1) -- ++(0,-0.2) -| (s1p1l.north);
+      %\draw[edge] (s2p1.input 1) -- ++(0,-0.4) -| (s2p1l1.north);
+      %\draw[edge] (s2p1.input 2) -- ++(0,-0.4) -| (s2p1l2.north);
+      %\draw[edge] (s2p2.input 1) -- ++(0,-0.4) -| (s2p2l1.north);
+      %\draw[edge] (s2p2.input 2) -- ++(0,-0.4) -| (s2p2l2.north);
+      %\draw[edge] (s3.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.75$} (s3l1.north);
+      %\draw[edge] (s3.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.25$} (s3l2.north);
+      %\draw[edge] (p1.input 2) -- ++(0,-0.4) -| (s1.east);
+      %\draw[edge] (p2.input 2) -- ++(0,-0.4) -| (s2.east);
+      %\draw[edge] (s1.west) -- ++(0,-0.3) node[below right]{\color{pdgreen}$1.0$} -| (s1p1.east);
+      %\draw[edge] (s2.input 1) -- ++(0,-0.4) -| node[above left]{\color{pdgreen}$.5$} (s2p1.east);
+      %\draw[edge] (s2.input 2) -- ++(0,-0.4) -| node[above right]{\color{pdgreen}$.5$} (s2p2.east);
+      %\draw[edge] (s1p1.input 2) -- ++ (0,-0.2) -| (s3.east);
+
+      %\node at ($(p1l) + (-0.75,0)$) {\color{pviolet}$p_1$};
+      %\node at ($(s1) + (0.5,0.5)$) {\color{psandy}$s_1$};
+      %\node at ($(p2l) + (0.75,0)$) {\color{pviolet}$p_2$};
+      %\node at ($(s2) + (0.5,0.5)$) {\color{psandy}$s_2$};
+    %\end{tikzpicture}
+
+    %\resizebox{\textwidth}{!}{
+    %\vbox{
+    %\begin{minipage}{0.45\textwidth}
+      %\input{data/cloud_pos_xy.tex}
+      %\begin{vhcenterb}
+        %\def\prx{-0.31}
+        %\def\pry{-0.4}
+        %\def\prz{0.85}
+        %\def\prtheta{-1}
+        %\resizebox{0.6\textwidth}{!}{
+        %\begin{tikzpicture}
+          %\begin{axis}[
+            %xmin=0,xmax=5,ymin=0,ymax=5,zmin=0,zmax=5,
+            %xlabel=$X$,ylabel=$Y$,zlabel=$Z$,zlabel style={rotate=-90},
+            %xtick={0,1,...,5},ytick={1,...,5},ztick={1,...,5},
+            %grid=major,
+          %]
+            %\addplot3+[only marks,ycomb,color=boxblue,mark options={boxblue,fill=boxblue}] table {data/cloud_pos.dat};
+            %\addplot3+[only marks,mark options={boxred,fill=boxred},opacity=0.5] table {data/cloud_neg.dat};
+            %\addplot3+[only marks,mark options={boxdgray,fill=boxdgray},mark size=1] table[z expr=0] {data/cloud_pos.dat};
+            %\addplot3+[only marks,mark options={boxorange,fill=boxorange},mark size=2,mark=triangle*] table[x expr=0] {data/cloud_pos.dat};
+            %\addplot3[colormap={bgreen}{color=(boxgreen),color=(boxgreen)},surf,color=boxgreen,
+              %point meta=1,z buffer=sort,shader=interp,opacity=0.6]
+              %{-(\prx*x+\pry*y+\prtheta)/\prz};
+            %\node at (5,3.5,3) {\color{boxgreen}$\set{A}$};
+            %\draw[very thick,boxpink,dashed] (2.2,0,0) coordinate (b1) -- node[above left,pos=0.9] {\color{boxpink}$\set{B}$} (5,3.1,0) coordinate (b2);
+            %\begin{scope}[on background layer]
+              %\fill[boxblue!50] (0,0,0) -- (b1) -- (b2) -- (5,5,0) -- (0,5,0) -- cycle;
+              %\fill[boxred!50] (b1) -- (5,0,0) -- (b2) -- cycle;
+            %\end{scope}
+          %\end{axis}
+        %\end{tikzpicture}
+        %}
+        %\vskip 0.1cm
+        %\resizebox{0.95\textwidth}{!}{
+          %\begin{tikzpicture}
+            %\coordinate (b1) at (2.2,0);
+            %\coordinate (b2) at (5,3.1);
+            %\fill[boxblue!50] (0,0) -- (b1) -- (b2) -- (5,5) -- (0,5) -- cycle;
+            %\fill[boxred!50] (b1) -- (5,0) -- (b2) -- cycle;
+            %\foreach \p in \points {
+              %\node[circle,inner sep=0pt,minimum size=2pt,fill=boxdgray] at \p {};
+            %}
+            %\draw[very thick,boxpink,dashed] (b1) -- node[left,pos=0.9] {\color{boxpink}$\set{B}$} (b2);
+            %\draw[very thick] (0,0) rectangle (5, 5);
+
+            %\begin{axis}[
+              %xshift=6cm,
+              %samples=30,domain=0:7, axis lines*=left,
+              %every axis x label/.style={at=(current axis.right of origin),anchor=west},
+              %every axis y label/.style={at={(axis description cs:0,1)},anchor=south},
+              %enlargelimits=false, clip=false, axis on top,
+              %xmin=0,xmax=7,ymin=0,ymax=1,
+              %xlabel=$Z$,ylabel=$p(Z)$,,xtick={1,...,7},
+              %grid=major,height=6.45cm,
+            %]
+              %\addplot[only marks,mark options={boxorange,fill=boxorange},mark=triangle*,mark size=4] table[x={z},y expr=0] {data/cloud_pos.dat};
+              %\path[name path=axis] (axis cs:0,0) -- (axis cs:5,0);
+              %\addplot[very thick,boxorange,name path=g1] {gauss(3.76,0.95)};
+              %\addplot[boxorange!60] fill between [of=g1 and axis];
+              %\node at (3.76,0.5) {$\mathcal{N}(\mu=3.76,\sigma=0.95)$};
+            %\end{axis}
+            %\node at (12,0) {};
+          %\end{tikzpicture}
+        %}
+        %\LARGE
+        %\begin{equation*}
+          %\textcolor{boxpink}{\set{B}}(x,y)=\begin{bmatrix} x & y\end{bmatrix}\cdot
+          %\scalebox{0.75}{$\begin{bmatrix*}[r] 1.10\\ -1.00 \end{bmatrix*}$}-2.43
+        %\end{equation*}
+      %\end{vhcenterb}
+    %\end{minipage}
+    %\begin{minipage}{0.45\textwidth}
+      %\begin{vhcenterb}
+        %\vskip 1cm
+        %\resizebox{0.3\textwidth}{!}{
+        %\begin{tikzpicture}
+          %\newVtreeNode[fill=boxgreen]{v}{0,0}{1};
+          %\newVtreeNode[fill=boxorange]{z}{$(v) + (-0.5,-1)$}{$Z$};
+          %\newVtreeNode[double color fill={boxblue}{boxred},shading angle=45]{r}{$(v) + (0.5,-1)$}{2};
+          %\newVtreeNode{y}{$(r) + (-0.5,-1)$}{$Y$};
+          %\newVtreeNode{x}{$(r) + (0.5,-1)$}{$X$};
+          %\draw (v) -- (z); \draw (v) -- (r);
+          %\draw (r) -- (y);
+          %\draw (r) -- (x);
+        %\end{tikzpicture}
+        %}
+        %\vskip 1cm
+        %\resizebox{0.7\textwidth}{!}{
+        %\begin{tikzpicture}
+          %\newSumNode[fill=boxgreen,label=above left:{\color{boxgreen}$\set{A}$}]{r}{0,0};
+          %\newProdNode[label=above left:{$\textcolor{boxgreen}{\set{A}}(\set{x})>0$},fill=boxblue]{p1}{$(r) + (-1,-1)$};
+          %\newProdNode[label=above right:{$\textcolor{boxgreen}{\set{A}}(\set{x})\leq 0$},fill=boxred]{p2}{$(r) + (1,-1)$};
+          %\newSumNode[fill=boxpink,label=above left:{\color{boxpink}$\set{B}$}]{b1}{$(p1) + (-1,-1)$};
+          %\newGaussNode[label=below:{\scriptsize$\mathcal{N}(3.76,0.95)$},fill=boxorange]{b2}{$(p1) + (1,-1)$};
+          %\newProdNode[fill=boxblue,label=below:{$\textcolor{boxpink}{\set{B}}(\set{x})>0$}]{q1}{$(b1) + (-1,-1)$};
+          %\newProdNode[fill=boxred,label=below:{$\textcolor{boxpink}{\set{B}}(\set{x})\leq 0$}]{q2}{$(b1) + (1,-1)$};
+          %\node at ($(p2) + (0,-0.5)$) {$\vdots$};
+          %\draw[edge] (r) -- node[pos=0.5,above left] {$\frac{16}{36}$} (p1);
+          %\draw[edge] (r) -- node[pos=0.5,above right] {$\frac{20}{36}$} (p2);
+          %\draw[edge] (p1) -- (b1);
+          %\draw[edge] (p1) -- (b2);
+          %\draw[edge] (b1) -- node[pos=0.5,above left] {$\frac{8}{16}$} (q1);
+          %\draw[edge] (b1) -- node[pos=0.5,above right] {$\frac{8}{16}$} (q2);
+        %\end{tikzpicture}
+        %}
+      %\end{vhcenterb}
+    %\end{minipage}
+    %}}
+  %\end{minipage}
+%\end{vhcenterb}
+
+\begin{vhcenterb}
+  \vskip -1.5cm
+  \input{data/cloud_pos_xy.tex}
+  \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
+    \vfill
+    \begin{vhcenterb}
+      \def\prx{-0.31}
+      \def\pry{-0.4}
+      \def\prz{0.85}
+      \def\prtheta{-1}
+      \resizebox{0.6\textwidth}{!}{
+      \begin{tikzpicture}
+        \begin{axis}[
+          xmin=0,xmax=5,ymin=0,ymax=5,zmin=0,zmax=5,
+          xlabel=$X$,ylabel=$Y$,zlabel=$Z$,zlabel style={rotate=-90},
+          xtick={0,1,...,5},ytick={1,...,5},ztick={1,...,5},
+          grid=major,
+        ]
+          \addplot3+[only marks,ycomb,color=boxblue,mark options={boxblue,fill=boxblue}] table {data/cloud_pos.dat};
+          \addplot3+[only marks,mark options={boxred,fill=boxred},opacity=0.5] table {data/cloud_neg.dat};
+          \addplot3+[only marks,mark options={boxdgray,fill=boxdgray},mark size=1] table[z expr=0] {data/cloud_pos.dat};
+          \addplot3+[only marks,mark options={boxorange,fill=boxorange},mark size=2,mark=triangle*] table[x expr=0] {data/cloud_pos.dat};
+          \addplot3[colormap={bgreen}{color=(boxgreen),color=(boxgreen)},surf,color=boxgreen,
+            point meta=1,z buffer=sort,shader=interp,opacity=0.6]
+            {-(\prx*x+\pry*y+\prtheta)/\prz};
+          \node at (5,3.5,3) {\color{boxgreen}$\set{A}$};
+          \draw[very thick,boxpink,dashed] (2.2,0,0) coordinate (b1) -- node[above left,pos=0.9] {\color{boxpink}$\set{B}$} (5,3.1,0) coordinate (b2);
+          \begin{scope}[on background layer]
+            \fill[boxblue!50] (0,0,0) -- (b1) -- (b2) -- (5,5,0) -- (0,5,0) -- cycle;
+            \fill[boxred!50] (b1) -- (5,0,0) -- (b2) -- cycle;
+          \end{scope}
+        \end{axis}
+      \end{tikzpicture}
+      }
+      \vskip 0.1cm
+      \resizebox{0.9\textwidth}{!}{
+        \begin{tikzpicture}
+          \coordinate (b1) at (2.2,0);
+          \coordinate (b2) at (5,3.1);
+          \fill[boxblue!50] (0,0) -- (b1) -- (b2) -- (5,5) -- (0,5) -- cycle;
+          \fill[boxred!50] (b1) -- (5,0) -- (b2) -- cycle;
+          \foreach \p in \points {
+            \node[circle,inner sep=0pt,minimum size=2pt,fill=boxdgray] at \p {};
+          }
+          \draw[very thick,boxpink,dashed] (b1) -- node[left,pos=0.9] {\color{boxpink}$\set{B}$} (b2);
+          \draw[very thick] (0,0) rectangle (5, 5);
+
+          \begin{axis}[
+            xshift=6cm,
+            samples=30,domain=0:7, axis lines*=left,
+            every axis x label/.style={at=(current axis.right of origin),anchor=west},
+            every axis y label/.style={at={(axis description cs:0,1)},anchor=south},
+            enlargelimits=false, clip=false, axis on top,
+            xmin=0,xmax=7,ymin=0,ymax=1,
+            xlabel=$Z$,ylabel=$p(Z)$,,xtick={1,...,7},
+            grid=major,height=6.45cm,
+          ]
+            \addplot[only marks,mark options={boxorange,fill=boxorange},mark=triangle*,mark size=4] table[x={z},y expr=0] {data/cloud_pos.dat};
+            \path[name path=axis] (axis cs:0,0) -- (axis cs:5,0);
+            \addplot[very thick,boxorange,name path=g1] {gauss(3.76,0.95)};
+            \addplot[boxorange!60] fill between [of=g1 and axis];
+            \node at (3.76,0.5) {$\mathcal{N}(\mu=3.76,\sigma=0.95)$};
+          \end{axis}
+          \node at (12,0) {};
+        \end{tikzpicture}
+      }
+      \LARGE
+      \begin{equation*}
+        \textcolor{boxpink}{\set{B}}(x,y)=\begin{bmatrix} x & y\end{bmatrix}\cdot
+        \scalebox{0.75}{$\begin{bmatrix*}[r] 1.10\\ -1.00 \end{bmatrix*}$}-2.43
+      \end{equation*}
+    \end{vhcenterb}
+  \end{minipage}
+  \begin{minipage}[t][0.7\textheight][t]{0.45\textwidth}
+    \begin{vhcenterb}
+      \vskip 1cm
+      \resizebox{0.3\textwidth}{!}{
+      \begin{tikzpicture}
+        \newVtreeNode[fill=boxgreen]{v}{0,0}{1};
+        \newVtreeNode[fill=boxorange]{z}{$(v) + (-0.5,-1)$}{$Z$};
+        \newVtreeNode[double color fill={boxblue}{boxred},shading angle=45]{r}{$(v) + (0.5,-1)$}{2};
+        \newVtreeNode{y}{$(r) + (-0.5,-1)$}{$Y$};
+        \newVtreeNode{x}{$(r) + (0.5,-1)$}{$X$};
+        \draw (v) -- (z); \draw (v) -- (r);
+        \draw (r) -- (y);
+        \draw (r) -- (x);
+      \end{tikzpicture}
+      }
+      \vskip 1cm
+      \resizebox{0.7\textwidth}{!}{
+      \begin{tikzpicture}
+        \newSumNode[fill=boxgreen,label=above left:{\color{boxgreen}$\set{A}$}]{r}{0,0};
+        \newProdNode[label=above left:{$\textcolor{boxgreen}{\set{A}}(\set{x})>0$},fill=boxblue]{p1}{$(r) + (-1,-1)$};
+        \newProdNode[label=above right:{$\textcolor{boxgreen}{\set{A}}(\set{x})\leq 0$},fill=boxred]{p2}{$(r) + (1,-1)$};
+        \newSumNode[fill=boxpink,label=above left:{\color{boxpink}$\set{B}$}]{b1}{$(p1) + (-1,-1)$};
+        \newGaussNode[label=below:{\scriptsize$\mathcal{N}(3.76,0.95)$},fill=boxorange]{b2}{$(p1) + (1,-1)$};
+        \newProdNode[fill=boxblue,label=below:{$\textcolor{boxpink}{\set{B}}(\set{x})>0$}]{q1}{$(b1) + (-1,-1)$};
+        \newProdNode[fill=boxred,label=below:{$\textcolor{boxpink}{\set{B}}(\set{x})\leq 0$}]{q2}{$(b1) + (1,-1)$};
+        \node at ($(p2) + (0,-0.5)$) {$\vdots$};
+        \draw[edge] (r) -- node[pos=0.5,above left] {$\frac{16}{36}$} (p1);
+        \draw[edge] (r) -- node[pos=0.5,above right] {$\frac{20}{36}$} (p2);
+        \draw[edge] (p1) -- (b1);
+        \draw[edge] (p1) -- (b2);
+        \draw[edge] (b1) -- node[pos=0.5,above left] {$\frac{8}{16}$} (q1);
+        \draw[edge] (b1) -- node[pos=0.5,above right] {$\frac{8}{16}$} (q2);
+      \end{tikzpicture}
+      }
+    \end{vhcenterb}
+  \end{minipage}
+\end{vhcenterb}
+
 % Slide: Supplemental Material
 
 \newpage
