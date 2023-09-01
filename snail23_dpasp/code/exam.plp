@@ -1,0 +1,15 @@
+% If house is messy, I do my chores.
+do(chores) :- house(messy).
+% Procrastinate if stressed and not doing chores.
+do(procrastinate) :- stressed, not do(chores).
+% Study if not procrastinating or doing chores.
+do(study) :- not do(procrastinate), not do(chores).
+% Oversleep if procrastinated.
+overslept :- do(procrastinate).
+% I'm late if I overslept or the bus is late.
+late :- overslept.
+late :- bus_late.
+% I'll do the exam if I'm not late.
+do(exam) :- not late.
+% I'll pass if I study and do the exam.
+pass :- do(study), do(exam).
