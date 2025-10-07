@@ -1,0 +1,7 @@
+let g:vimtex_quickfix_ignore_filters = [
+      \ 'Package hyperref Warning: Option `pdfauthor',
+      \ 'Package mercatormap Warning',
+      \ 'Underfull',
+      \ 'Overfull',
+      \ 'LaTeX Font Warning',
+      \]

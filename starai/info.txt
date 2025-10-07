@@ -1,0 +1,5 @@
+Título: dPASP: Programming with Logic and Neural Networks
+
+Resumo: dPASP is a new declarative programming language for neurosymbolic reasoning and learning. In a nutshell, dPASP provides an intuitive and flexible language for neurosymbolic learning by combining the high-level reasoning of probabilistic and logic programming, with the low-level perception of neural networks. It further offers a powerful hybrid toolbox for inference for a wide variety of possible semantics, extending the language to enable the presence of contradictions or imprecisions in the knowledge base. In this talk, we provide a high-level introduction to dPASP, showcasing features of the dPASP system through examples. We then show current challenges and possible ideas for further research in the field.
+
+Mini-bio: Renato obtained his BSc and MSc in Computer Science from the University of São Paulo. He is the recipient of the XIII CTDIAC@BRACIS Best MSc in AI Award and XXXVI CTD@CSBC Best MSc in Computing Award. He is an incoming PhD student at the University of California, Los Angeles.
